@@ -1,0 +1,220 @@
+/* ==========================================================================
+   Макс і код маяка — стилі
+   ========================================================================== */
+:root{
+  --night:#141a3c;
+  --night-2:#1d2555;
+  --night-3:#28316b;
+  --beam:#ffd447;
+  --lamp:#ffb03a;
+  --paper:#fbf4e2;
+  --paper-edge:#e9dcbb;
+  --ink:#2b2748;
+  --ink-soft:#5b567e;
+  --sunflower:#f5a623;
+  --sea:#3fb3a5;
+  --sea-deep:#2a8b80;
+  --crimson:#e2574c;
+  --cerb:#b98cff;
+  --tsugi:#e9b949;
+  --star:#c9d2ff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Nunito",system-ui,sans-serif;
+  color:#eef1ff;
+  background:var(--night);
+  line-height:1.65;
+  font-size:18px;
+  overflow-x:hidden;
+}
+img{max-width:100%}
+.wrap{max-width:840px;margin:0 auto;padding:0 20px}
+a{color:var(--beam)}
+
+/* ---------- typography ---------- */
+h1,h2,h3,h4,.display{font-family:"Fredoka",sans-serif;font-weight:600;line-height:1.14;letter-spacing:.2px}
+h1{font-size:clamp(2.2rem,8vw,3.4rem);color:var(--beam);margin:.1em 0}
+h2{font-size:clamp(1.7rem,5vw,2.4rem);color:var(--beam);margin:0 0 .15em}
+h3{font-size:1.3rem;margin:1.4em 0 .35em;color:#fff}
+.chapter-num{
+  font-family:"Fredoka",sans-serif;font-size:.95rem;letter-spacing:1.5px;
+  color:var(--sunflower);display:block;margin-bottom:.3em;
+}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;background:rgba(15,19,48,.82);
+  backdrop-filter:blur(8px);border-bottom:1px solid #2b3576;
+}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;padding:10px 20px}
+.topbar .brand{font-family:"Fredoka";color:var(--beam);font-size:1.05rem;text-decoration:none}
+.topbar nav a{color:#cdd4ff;text-decoration:none;margin-left:16px;font-size:.95rem}
+.topbar nav a:hover{color:#fff}
+
+/* ---------- sections ---------- */
+section{padding:56px 0;position:relative}
+.hook,.story{font-size:1.08rem}
+.story p{margin:.7em 0}
+.pull{
+  font-family:"Fredoka";font-size:1.15rem;color:#cdd4ff;
+  border-left:3px solid var(--lamp);padding-left:18px;margin:18px 0;font-style:italic;
+}
+
+/* ---------- postcard from Tsugi ---------- */
+.postcard{
+  background:linear-gradient(135deg,#2a3374,#1d2555);
+  border:1px solid #46529c;border-radius:12px;padding:16px 20px;margin:22px 0;
+  position:relative;
+}
+.postcard .from{
+  font-family:"Fredoka";font-size:.85rem;color:var(--tsugi);display:flex;
+  align-items:center;gap:8px;margin-bottom:4px;
+}
+.postcard p{margin:.2em 0;color:#e7ecff;font-style:italic}
+.postcard .stamp{
+  position:absolute;top:12px;right:14px;width:34px;height:40px;border-radius:4px;
+  background:#e2574c22;border:1.5px dashed #e2574c;display:flex;align-items:center;
+  justify-content:center;font-size:1.1rem;
+}
+
+/* ---------- journal (paper) ---------- */
+.journal{
+  background:var(--paper);color:var(--ink);border-radius:14px;
+  padding:24px 26px;margin:24px 0;border:1px solid var(--paper-edge);
+  box-shadow:0 18px 40px -22px rgba(0,0,0,.7);position:relative;
+}
+.journal::before{
+  content:"";position:absolute;left:18px;top:12px;bottom:12px;width:2px;
+  background:repeating-linear-gradient(var(--paper-edge) 0 6px,transparent 6px 12px);opacity:.6;
+}
+.journal h3{color:var(--ink);margin-top:.1em}
+.journal p{margin:.5em 0}
+.journal .small{color:var(--ink-soft);font-size:.92rem}
+.journal code{background:#00000010;border-radius:5px;padding:1px 5px;font-family:"JetBrains Mono";font-size:.85em}
+
+/* ---------- anatomy ---------- */
+.anatomy{margin:18px 0 6px}
+.anatomy-line{font-family:"JetBrains Mono",monospace;font-size:1.12rem;display:flex;flex-wrap:wrap;justify-content:center}
+.tok{display:inline-flex;flex-direction:column;align-items:center;position:relative;padding:2px 1px}
+.tok .glyph{padding:6px 8px;border-radius:8px;font-weight:500;white-space:pre}
+.tok .cap{font-family:"Nunito";font-size:.8rem;line-height:1.25;margin-top:26px;max-width:140px;text-align:center;position:relative}
+.tok .cap:empty{display:none}
+.tok .cap::before{content:"";position:absolute;top:-22px;left:50%;width:2px;height:18px;background:currentColor;opacity:.5;transform:translateX(-50%)}
+.tok.t-kw .glyph{background:#fff2cf;color:#a5741a}.tok.t-kw .cap{color:#a5741a}
+.tok.t-fn .glyph{background:#d4f5ef;color:#1c7a6e}.tok.t-fn .cap{color:#1c7a6e}
+.tok.t-num .glyph{background:#ffe0ee;color:#b03e73}.tok.t-num .cap{color:#b03e73}
+.tok.t-str .glyph{background:#e3f5d6;color:#4a7a2c}.tok.t-str .cap{color:#4a7a2c}
+.tok.t-punc .glyph{background:#e7e9fb;color:#5b567e}.tok.t-punc .cap{color:#7a75a0}
+
+/* ---------- diagrams ---------- */
+.diagram{margin:20px 0;text-align:center}
+.diagram svg{max-width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:12px 20px;justify-content:center;margin:10px 0;font-size:.9rem;color:var(--ink-soft)}
+.legend div{display:flex;align-items:center;gap:8px}
+.legend .chip{width:34px;height:22px;flex:none}
+
+/* ==========================================================================
+   Пісочниця (sandbox)
+   ========================================================================== */
+.sandbox{
+  background:linear-gradient(180deg,var(--night-2),var(--night-3));
+  border:1px solid #3a4699;border-radius:16px;padding:18px;margin:26px 0;
+}
+.sandbox .sb-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.sandbox .sb-title{font-family:"Fredoka";color:var(--beam);font-size:1.1rem}
+.sandbox .sb-grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:760px){.sandbox .sb-grid{grid-template-columns:1.1fr .9fr}}
+
+.sb-editor{position:relative;border-radius:10px;overflow:hidden;border:1px solid #2b3576;background:#141a3c}
+.sb-editor textarea{
+  width:100%;min-height:150px;resize:vertical;border:none;outline:none;
+  background:transparent;color:#e7ecff;font-family:"JetBrains Mono",monospace;
+  font-size:.95rem;line-height:1.7;padding:14px;tab-size:4;white-space:pre;
+}
+.sb-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+
+.sb-stage{background:#0f1330;border:1px solid #2b3576;border-radius:10px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.beam-stage{position:relative;width:170px;height:170px}
+.beam-rot{position:absolute;inset:0;transition:transform .5s ease}
+.status{font-family:"JetBrains Mono";font-size:.82rem;color:#c7cffb;width:100%}
+.status b{color:var(--beam);font-weight:500}
+
+.console{
+  font-family:"JetBrains Mono";font-size:.85rem;background:#0c1029;border:1px solid #2b3576;
+  border-radius:10px;padding:10px 12px;margin-top:10px;min-height:2.2em;white-space:pre-wrap;
+  color:#c7cffb;max-height:180px;overflow:auto;
+}
+.console .err{color:#ffb3ad}
+.console .ok{color:#8ff0c2}
+.console .cat{color:var(--tsugi)}
+
+/* ---------- buttons ---------- */
+button.btn{
+  font-family:"Fredoka",sans-serif;font-size:1rem;cursor:pointer;background:var(--beam);
+  color:#4a3a00;border:none;border-radius:999px;padding:9px 20px;transition:transform .1s,filter .15s;
+}
+button.btn:hover{filter:brightness(1.06)}
+button.btn:active{transform:translateY(1px)}
+button.btn.ghost{background:transparent;color:#dfe4ff;border:1.5px solid #5b66c4}
+button.btn.small{padding:7px 14px;font-size:.9rem}
+button.btn:disabled{opacity:.5;cursor:default}
+button.btn:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #fff;outline-offset:2px}
+select.pick{font-family:"Nunito";font-size:.95rem;padding:8px 12px;border-radius:10px;border:1.5px solid #5b66c4;background:#eef1ff;color:var(--ink)}
+
+/* ---------- applied box ---------- */
+.applied{background:rgba(63,179,165,.12);border:1px solid var(--sea);border-radius:12px;padding:16px 20px;margin:22px 0}
+.applied .tag{font-family:"Fredoka";font-size:.85rem;color:var(--sea);display:block;margin-bottom:2px}
+
+/* ---------- secret ---------- */
+.secret{background:#0f1330;border:1px dashed #5b66c4;border-radius:14px;padding:22px;margin:24px 0;color:#c7cffb}
+.secret h3{color:var(--tsugi)}
+
+hr.rule{border:none;border-top:1px solid #333c78;margin:44px 0}
+.center{text-align:center}
+.mini{font-size:.85rem;color:#9aa4dd}
+footer{padding:40px 0 60px;text-align:center;color:#9aa4dd}
+
+@media (max-width:560px){
+  body{font-size:17px}
+  .journal{padding:20px 18px}
+  .anatomy-line{font-size:1rem}
+  .tok .cap{max-width:100px;font-size:.72rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .beam-sweep{animation:none!important}
+  html{scroll-behavior:auto}
+  .beam-rot{transition:none}
+}
+
+/* ==========================================================================
+   Двері маяка — екран з купоном
+   ========================================================================== */
+.gate{
+  position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;
+  padding:24px;background:radial-gradient(120% 90% at 50% 25%,#25306e 0%,#0e1330 70%);
+  transition:opacity .5s ease;
+}
+html.unlocked .gate{display:none}
+html.gated{overflow:hidden}
+.gate.open{opacity:0;pointer-events:none}
+.gate-card{
+  max-width:420px;width:100%;text-align:center;background:rgba(20,26,60,.6);
+  border:1px solid #3a4699;border-radius:18px;padding:30px 26px;
+  box-shadow:0 30px 60px -30px rgba(0,0,0,.8);
+}
+.gate-card h1{font-size:1.9rem;margin:.2em 0 .1em}
+.gate-card p{color:#cdd4ff;margin:.4em 0}
+.gate-row{display:flex;gap:8px;margin:16px 0 6px;flex-wrap:wrap;justify-content:center}
+.gate-row input{
+  flex:1;min-width:160px;font-family:"JetBrains Mono";font-size:1.05rem;text-align:center;
+  padding:11px 14px;border-radius:12px;border:1.5px solid #5b66c4;background:#0f1330;color:#fff;
+  letter-spacing:1px;
+}
+.gate-row input:focus-visible{outline:3px solid var(--beam);outline-offset:2px}
+.gate-fb{min-height:1.4em;font-weight:700;margin-top:6px}
+.gate-fb.ok{color:#8ff0c2}
+.gate-fb.no{color:#ffb3ad}
+.gate .beam-on{transition:opacity .6s ease}
