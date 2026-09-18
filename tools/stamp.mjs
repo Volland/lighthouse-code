@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 
 const ROOT  = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const PAGES = ['index.html', 'sandbox.html'];
+const PAGES = ['index.html', 'sandbox.html', 'dlia-doroslogo.html'];
 const STAMP = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
 let touched = 0;

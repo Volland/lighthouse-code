@@ -218,6 +218,10 @@ html.gated{overflow:hidden}
 .gate-fb.ok{color:#8ff0c2}
 .gate-fb.no{color:#ffb3ad}
 .gate .beam-on{transition:opacity .6s ease}
+/* єдині відчинені двері: сторінка для дорослого, ще до купівлі */
+.gate-open{margin:14px 0 0;font-size:.9rem;line-height:1.45}
+.gate-open a{color:var(--beam);text-decoration:none;border-bottom:1px dotted currentColor}
+.gate-open a:hover{color:#fff}
 
 /* ==========================================================================
    Записка Макса — голос оповідача на полях журналу

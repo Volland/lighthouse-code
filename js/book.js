@@ -229,15 +229,28 @@
     });
   }
 
+  /* які розділи малювати на цій сторінці:
+     data-only="id,id" — лише ці, data-skip="id,id" — усі, крім них.
+     Так сторінка для дорослого може жити окремим файлом, поза дверима маяка. */
+  function pick(book, mount){
+    const ids = (attr) => (mount.dataset[attr] || '').split(',').map(s=>s.trim()).filter(Boolean);
+    const only = ids('only'), skip = ids('skip');
+    if(!only.length && !skip.length) return book;
+    const chapters = book.chapters.filter(ch =>
+      (!only.length || only.includes(ch.id)) && !skip.includes(ch.id));
+    return Object.assign({}, book, { chapters });
+  }
+
   function start(){
     const mount = document.getElementById('book');
     if(!mount) return;
     if(!window.BOOK){ mount.innerHTML = '<div class="wrap"><p>Не знайшовся текст книги.</p></div>'; return; }
-    render(window.BOOK, mount);
-    renderProgress(window.BOOK);
-    wire(window.BOOK);
+    const book = pick(window.BOOK, mount);
+    render(book, mount);
+    renderProgress(book);
+    wire(book);
     const foot = document.getElementById('book-footer');
-    if(foot && window.BOOK.footer) foot.textContent = window.BOOK.footer;
+    if(foot && book.footer) foot.textContent = book.footer;
   }
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
