@@ -1,0 +1,86 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1789730984636,
+  "projectRoot": "/Users/volodymyrpavlyshyn/Documents/publishing/lighthouse-code",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "css": {
+      "path": "css",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1789730984599,
+      "keyFiles": [
+        "style.css"
+      ]
+    },
+    "js": {
+      "path": "js",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1789730984602,
+      "keyFiles": [
+        "gate.js",
+        "lighthouse.js",
+        "runtime.js"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "js/book.js",
+      "accessCount": 2,
+      "lastAccessed": 1789741795266,
+      "type": "file"
+    },
+    {
+      "path": "js/runtime.js",
+      "accessCount": 2,
+      "lastAccessed": 1789741882398,
+      "type": "file"
+    },
+    {
+      "path": "css/style.css",
+      "accessCount": 1,
+      "lastAccessed": 1789741817848,
+      "type": "file"
+    },
+    {
+      "path": "index.html",
+      "accessCount": 1,
+      "lastAccessed": 1789741824451,
+      "type": "file"
+    },
+    {
+      "path": "js/tasks.js",
+      "accessCount": 1,
+      "lastAccessed": 1789741890160,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
