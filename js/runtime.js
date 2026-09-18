@@ -7,7 +7,7 @@
 const PYODIDE_VER = '0.26.4';
 const PYODIDE_URL = `https://cdn.jsdelivr.net/npm/pyodide@${PYODIDE_VER}/`;
 
-const WORLD_DEFAULTS = { ticks: 6, fuel: 12, dumplings: 12, wind: 'тиша', guest: false };
+const WORLD_DEFAULTS = { ticks: 6, fuel: 12, cans: 3, wind: 'тиша', guest: false };
 
 let _pyodide = null, _loading = null;
 
@@ -58,7 +58,7 @@ _CAP_LINES = 300000
 
 _ticks = int(_cfg_ticks)
 запас = int(_cfg_fuel)
-пельмені = int(_cfg_dumplings)
+каністри = int(_cfg_cans)
 вітер = str(_cfg_wind)
 _guest = bool(_cfg_guest)
 
@@ -74,7 +74,7 @@ def _jars():
     Банки маяка — перші, а далі ті, що дитина завела сама (будь-яке своє число)."""
     g = globals()
     out = {}
-    for name in ("запас", "пельмені"):
+    for name in ("запас", "каністри"):
         v = g.get(name)
         if isinstance(v, int) and not isinstance(v, bool):
             out[name] = v
@@ -176,7 +176,7 @@ function execute(py, userCode, world){
   const ns = py.globals.get('dict')();
   ns.set('_cfg_ticks',     world.ticks);
   ns.set('_cfg_fuel',      world.fuel);
-  ns.set('_cfg_dumplings', world.dumplings);
+  ns.set('_cfg_cans',      world.cans);
   ns.set('_cfg_wind',      world.wind);
   ns.set('_cfg_guest',     world.guest);
 
@@ -325,14 +325,14 @@ class Sandbox {
 
   resetStage(){
     const w = this.world();
-    this.view.reset({ 'запас': w.fuel, 'пельмені': w.dumplings });
+    this.view.reset({ 'запас': w.fuel, 'каністри': w.cans });
   }
 
   world(){
     const w = Object.assign({}, WORLD_DEFAULTS, {
       ticks:     this.opts.ticks     ?? WORLD_DEFAULTS.ticks,
       fuel:      this.opts.fuel      ?? WORLD_DEFAULTS.fuel,
-      dumplings: this.opts.dumplings ?? WORLD_DEFAULTS.dumplings
+      cans:      this.opts.cans      ?? WORLD_DEFAULTS.cans
     });
     if(this.scenarioSel){
       const v = this.scenarioSel.value;
@@ -420,7 +420,7 @@ function initSandboxes(root){
       seed:      seedEl ? seedEl.textContent : (el.getAttribute('data-code') || ''),
       fuel:      num('data-fuel', WORLD_DEFAULTS.fuel),
       ticks:     num('data-ticks', WORLD_DEFAULTS.ticks),
-      dumplings: num('data-dumplings', WORLD_DEFAULTS.dumplings),
+      cans:      num('data-cans', WORLD_DEFAULTS.cans),
       scenarios: el.hasAttribute('data-scenarios')
     });
   });

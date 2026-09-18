@@ -115,7 +115,7 @@
           seed:      spec.code,
           fuel:      spec.fuel,
           ticks:     spec.ticks,
-          dumplings: spec.dumplings,
+          cans:      spec.cans,
           scenarios: !!spec.scenarios,
           task:      isTask ? { id: spec.id, checks: spec.checks, trials: spec.trials } : null
         });

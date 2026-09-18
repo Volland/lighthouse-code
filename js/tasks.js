@@ -114,7 +114,7 @@ const RULES = {
 
   /* дитина завела власну банку — будь-яку, крім тих, що вже стояли на маяку */
   newJar: (res, spec) => {
-    const own = Object.keys(res.jars || {}).filter(n => n !== 'запас' && n !== 'пельмені');
+    const own = Object.keys(res.jars || {}).filter(n => n !== 'запас' && n !== 'каністри');
     return own.length >= (spec.min ?? 1) ||
       'Своєї банки на підвіконні не видно. Придумай їй підпис і поклади туди число — ' +
       'наприклад <code>дрова = 5</code>.';

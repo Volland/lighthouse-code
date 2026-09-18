@@ -45,7 +45,7 @@ for run in job['runs']:
     pushed.clear()
     w = run['world']
     ns = {'_cfg_ticks': w.get('ticks', 6), '_cfg_fuel': w.get('fuel', 12),
-          '_cfg_dumplings': w.get('dumplings', 12), '_cfg_wind': w.get('wind', 'тиша'),
+          '_cfg_cans': w.get('cans', 3), '_cfg_wind': w.get('wind', 'тиша'),
           '_cfg_guest': w.get('guest', False)}
     err = None
     try:
@@ -68,7 +68,7 @@ const runs = [];
 const plan = [];
 for(const t of tasks){
   const base = {};
-  for(const k of ['ticks','fuel','dumplings']) if(k in t) base[k] = t[k];
+  for(const k of ['ticks','fuel','cans']) if(k in t) base[k] = t[k];
   const item = { task: t, solution: null, start: null, trials: [] };
   if(t.solution){ item.solution = runs.length; runs.push({ code: t.solution, world: base }); }
   item.start = runs.length; runs.push({ code: t.code, world: base });
