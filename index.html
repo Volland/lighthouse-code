@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="uk" class="i18n-boot" data-page="index">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Макс і код маяка</title>
+<title>Макс і код маяка · Max und der Code des Leuchtturms</title>
 <meta name="description" content="Історія про хлопчика, який лишився сам доглядати маяк — і навчився думати, як думає код. Зі справжньою пісочницею Python.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260918">
+<link rel="stylesheet" href="css/style.css?v=20260918.d0d5db">
 <script>
   /* поки не знаємо — вважаємо зачиненим (fail-closed) */
   (function(){try{
@@ -16,51 +16,25 @@
       localStorage.getItem('lighthouse_unlocked')==='1' ? 'unlocked' : 'gated');
   }catch(e){ document.documentElement.classList.add('gated'); }})();
 </script>
+<!-- мова книги: пакети слів, тоді рушій, який вибирає один із них -->
+<script src="js/lang/uk.js?v=20260918.d0d5db"></script>
+<script src="js/lang/de.js?v=20260918.d0d5db"></script>
+<script src="js/i18n.js?v=20260918.d0d5db" data-book></script>
 </head>
 <body>
 
-<!-- ===================== ДВЕРІ МАЯКА (купон) ===================== -->
-<div class="gate" id="gate">
-  <div class="gate-card">
-    <svg viewBox="0 0 120 130" width="110" aria-hidden="true">
-      <defs><linearGradient id="gbeam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffd447" stop-opacity=".9"/><stop offset="1" stop-color="#ffd447" stop-opacity="0"/></linearGradient></defs>
-      <polygon class="beam-on" points="60,40 120,22 120,58" fill="url(#gbeam)" style="opacity:0"/>
-      <polygon class="beam-on" points="60,40 0,22 0,58" fill="url(#gbeam)" style="opacity:0;transform:scaleX(-1);transform-origin:60px 40px"/>
-      <path d="M46,120 L52,54 L68,54 L74,120 Z" fill="#f3ede0"/>
-      <path d="M48,100 L72,100 L73,116 L47,116 Z" fill="#e2574c"/>
-      <rect x="50" y="30" width="20" height="14" rx="3" fill="#3a4699"/>
-      <circle cx="60" cy="40" r="7" fill="#ffd447"/>
-      <path d="M52,26 L68,26 L64,20 L56,20 Z" fill="#2b3576"/>
-      <!-- замкова щілина на дверях -->
-      <circle cx="60" cy="106" r="3.4" fill="#2b2748"/><rect x="58.6" y="106" width="2.8" height="7" fill="#2b2748"/>
-    </svg>
-    <h1>Світло Маяку</h1>
-    <p>Двері маяка зачинені. Введи ключ-купон, щоб зайти до книги.</p>
-    <div class="gate-row">
-      <input id="coupon" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="ключ-купон" aria-label="ключ-купон">
-      <button id="gate-btn" class="btn">Відчинити</button>
-    </div>
-    <div id="gate-fb" class="gate-fb" role="status" aria-live="polite"></div>
-    <p class="mini">Ключ додається до книги при купівлі.</p>
-    <p class="gate-open"><a href="dlia-doroslogo.html">Ви дорослий і книгу ще не купили?
-      Сторінка «Для дорослого» відчинена →</a></p>
-  </div>
-</div>
+<!-- ===================== ДВЕРІ МАЯКА (купон) =====================
+     Саму картку малює js/gate.js — словами тієї мови, що й книга. -->
+<div class="gate" id="gate" data-lead="lead"></div>
 
-<div class="topbar"><div class="wrap">
-  <a class="brand" href="#top">🗼 Макс і код маяка</a>
-  <nav>
-    <a href="#dlia-doroslogo">Для дорослого</a>
-    <a href="#rozdil1">Розділи</a>
-    <a href="sandbox.html">Пісочниця</a>
-  </nav>
-</div></div>
+<!-- шапку з перемикачем мови малює js/i18n.js -->
+<div data-topbar data-nav="book" data-home="#top"></div>
 
 <!-- ===================== HERO ===================== -->
 <section id="top" style="padding-top:34px">
 <div class="wrap center">
   <div class="diagram" aria-hidden="true">
-  <svg viewBox="0 0 360 300" width="360" role="img" aria-label="Маяк уночі над соняшниковим полем">
+  <svg viewBox="0 0 360 300" width="360" role="img" data-i18n-attr="aria-label:hero.alt">
     <defs>
       <radialGradient id="sky" cx="50%" cy="30%" r="80%"><stop offset="0%" stop-color="#25306e"/><stop offset="100%" stop-color="#0e1330"/></radialGradient>
       <linearGradient id="beamG" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#ffd447" stop-opacity=".9"/><stop offset="100%" stop-color="#ffd447" stop-opacity="0"/></linearGradient>
@@ -81,11 +55,8 @@
     </g>
   </svg>
   </div>
-  <h1>Макс і код маяка</h1>
-  <p style="font-size:1.15rem;color:#cdd4ff;max-width:560px;margin:8px auto 0">
-    Історія про хлопчика, який лишився сам доглядати маяк — і навчився думати так,
-    як думає код. Читай, а тоді вмикай маяк своїми руками.
-  </p>
+  <h1 data-i18n="hero.title">Макс і код маяка</h1>
+  <p data-i18n="hero.lead" style="font-size:1.15rem;color:#cdd4ff;max-width:560px;margin:8px auto 0"></p>
 </div>
 </section>
 
@@ -94,17 +65,17 @@
 <hr class="rule">
 
 <!-- ===================== КНИГА =====================
-     Увесь текст живе в content/story.js, малює його js/book.js.
+     Увесь текст живе в content/story.<мова>.js, малює його js/book.js.
      Тут — лише місце, куди книга вкладається.                    -->
 <main id="book"></main>
 
-<footer id="book-footer">Макс, Цугі й Цербер · світло Маяку</footer>
+<footer id="book-footer" data-i18n="meta.footer"></footer>
 
-<script src="js/gate.js?v=20260918"></script>
-<script src="content/story.js?v=20260918"></script>
-<script src="js/tasks.js?v=20260918"></script>
-<script src="js/lighthouse.js?v=20260918"></script>
-<script src="js/runtime.js?v=20260918"></script>
-<script src="js/book.js?v=20260918"></script>
+<script src="js/gate.js?v=20260918.d0d5db"></script>
+<script src="js/dsl.js?v=20260918.d0d5db"></script>
+<script src="js/tasks.js?v=20260918.d0d5db"></script>
+<script src="js/lighthouse.js?v=20260918.d0d5db"></script>
+<script src="js/runtime.js?v=20260918.d0d5db"></script>
+<script src="js/book.js?v=20260918.d0d5db"></script>
 </body>
 </html>

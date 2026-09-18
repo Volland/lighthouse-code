@@ -1,132 +1,49 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="uk" class="i18n-boot" data-page="sandbox">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Пісочниця маяка</title>
+<title>Пісочниця маяка · Der Sandkasten des Leuchtturms</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260918">
+<link rel="stylesheet" href="css/style.css?v=20260918.d0d5db">
 <script>
   (function(){try{
     document.documentElement.classList.add(
       localStorage.getItem('lighthouse_unlocked')==='1' ? 'unlocked' : 'gated');
   }catch(e){ document.documentElement.classList.add('gated'); }})();
 </script>
+<script src="js/lang/uk.js?v=20260918.d0d5db"></script>
+<script src="js/lang/de.js?v=20260918.d0d5db"></script>
+<script src="js/i18n.js?v=20260918.d0d5db"></script>
 </head>
 <body>
 
 <!-- ===================== ДВЕРІ МАЯКА (купон) ===================== -->
-<div class="gate" id="gate">
-  <div class="gate-card">
-    <svg viewBox="0 0 120 130" width="110" aria-hidden="true">
-      <defs><linearGradient id="gbeam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffd447" stop-opacity=".9"/><stop offset="1" stop-color="#ffd447" stop-opacity="0"/></linearGradient></defs>
-      <polygon class="beam-on" points="60,40 120,22 120,58" fill="url(#gbeam)" style="opacity:0"/>
-      <path d="M46,120 L52,54 L68,54 L74,120 Z" fill="#f3ede0"/>
-      <path d="M48,100 L72,100 L73,116 L47,116 Z" fill="#e2574c"/>
-      <rect x="50" y="30" width="20" height="14" rx="3" fill="#3a4699"/>
-      <circle cx="60" cy="40" r="7" fill="#ffd447"/>
-      <path d="M52,26 L68,26 L64,20 L56,20 Z" fill="#2b3576"/>
-      <circle cx="60" cy="106" r="3.4" fill="#2b2748"/><rect x="58.6" y="106" width="2.8" height="7" fill="#2b2748"/>
-    </svg>
-    <h1>Світло Маяку</h1>
-    <p>Двері маяка зачинені. Введи ключ-купон, щоб зайти.</p>
-    <div class="gate-row">
-      <input id="coupon" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="ключ-купон" aria-label="ключ-купон">
-      <button id="gate-btn" class="btn">Відчинити</button>
-    </div>
-    <div id="gate-fb" class="gate-fb" role="status" aria-live="polite"></div>
-    <p class="mini">Ключ додається до книги при купівлі.</p>
-    <p class="gate-open"><a href="dlia-doroslogo.html">Ви дорослий і книгу ще не купили?
-      Сторінка «Для дорослого» відчинена →</a></p>
-  </div>
-</div>
+<div class="gate" id="gate" data-lead="leadShort"></div>
 
-<div class="topbar"><div class="wrap">
-  <a class="brand" href="index.html">🗼 Макс і код маяка</a>
-  <nav><a href="index.html">← До книги</a></nav>
-</div></div>
+<div data-topbar data-nav="back" data-home="index.html"></div>
 
 <section style="padding-top:34px">
 <div class="wrap">
-  <h2>Пісочниця маяка</h2>
-  <p class="story">Тут можна писати будь-що. Постав погоду, натисни «Запустити» — і маяк
-  оживе. Помиляйся скільки завгодно: маяк спокійно підкаже, що не так.</p>
+  <h2 data-i18n="sandboxPage.title"></h2>
+  <p class="story" data-i18n="sandboxPage.intro"></p>
 
-  <div class="sb" data-scenarios data-night data-ticks="6" data-fuel="12" data-cans="3" data-seed="#seedFree" data-title="Пиши, що завгодно"></div>
-  <script type="text/x-python" id="seedFree">
-# Спробуй! Наприклад — запали маяк, поверни промінь кілька разів
-# і долий у лампу каністру гасу з комори.
+  <div class="sb" data-scenarios data-night data-ticks="6" data-fuel="12" data-cans="3"
+       data-seed-i18n="sandboxPage.seed" data-title-i18n="sandboxPage.sbTitle"></div>
 
-def запалити_маяк():
-    протерти_скло()
-    підрівняти_гніт()
-    повернути_лінзу("північ")
-    запалити_вогонь()
-
-запалити_маяк()
-
-while темно():
-    обернути_промінь()
-    ніч = ніч - 1
-
-каністри = каністри - 1
-запас = запас + 4
-показати("каністр у коморі:", каністри, "· ночей світла:", запас)
-показати("готово")
-  </script>
-
-  <div class="journal">
-    <h3>Команди маяка</h3>
-    <p><strong>Дії (щось роблять):</strong></p>
-    <ul>
-      <li><code>протерти_скло()</code> — підготувати скло</li>
-      <li><code>підрівняти_гніт()</code> — підготувати гніт</li>
-      <li><code>повернути_лінзу("північ")</code> — повернути лінзу в бік</li>
-      <li><code>запалити_вогонь()</code> — засвітити маяк</li>
-      <li><code>повне_світло()</code> — світити на повну</li>
-      <li><code>притлумити_гніт()</code> — притлумити світло</li>
-      <li><code>обернути_промінь()</code> — обернути промінь на крок</li>
-      <li><code>дати_воду(соняшник)</code> — полити соняшник</li>
-      <li><code>показати(щось)</code> — написати щось у журнал</li>
-    </ul>
-    <p><strong>Питання й лічба (щось відповідають):</strong></p>
-    <ul>
-      <li><code>темно()</code> — чи ще є насіння в банці «ніч». Саме воно нічого не міняє:
-          ніч коротшає тільки тоді, коли ти сам напишеш <code>ніч = ніч - 1</code></li>
-      <li><code>гість_на_стежці()</code> — чи є гість (залежить від погоди)</li>
-      <li><code>полічити(ряд)</code> — скільки всього в ряду</li>
-    </ul>
-    <p><strong>Банки на підвіконні (числа, які можна міняти):</strong></p>
-    <ul>
-      <li><code>ніч</code> — скільки обертів лишилось до світанку (спочатку 6)</li>
-      <li><code>запас</code> — скільки ночей пального лишилось у лампі</li>
-      <li><code>каністри</code> — скільки каністр гасу чекає в коморі (одна каністра — чотири ночі)</li>
-    </ul>
-    <p class="small">Банки видно біля маяка: скільки насінин — стільки й лишилось.
-    Відсипати — <code>запас = запас - 1</code>. Досипати — <code>запас = запас + 4</code>.</p>
-    <p><strong>Готові речі:</strong></p>
-    <ul>
-      <li><code>вітер</code> — яка погода ("сильний" або "тиша")</li>
-      <li><code>ряд</code> — ряд соняшників, по яких можна пройти в <code>for</code></li>
-    </ul>
-    <p class="small">Працюють і звичайні речі Python: <code>if</code>, <code>while</code>,
-    <code>for</code>, <code>def</code>, <code>return</code>, <code>range()</code>, числа, слова.</p>
-    <p><strong>Правило циклу:</strong></p>
-    <p class="small">У <code>while темно():</code> усередині мусить бути
-    <code>ніч = ніч - 1</code>. Інакше банка «ніч» ніколи не спорожніє, і цикл
-    крутитиметься без кінця — Цугі тебе зупинить і скаже про це.</p>
-    <p class="small">А якщо написати ім'я дії <em>без</em> дужок — маяк промовчить,
-    зате озветься Цербер.</p>
-  </div>
+  <!-- довідник команд — мовою книги -->
+  <div class="journal" data-i18n-html="sandboxPage.doc"></div>
 </div>
 </section>
 
-<footer>Макс, Цугі й Цербер · світло Маяку</footer>
+<footer data-i18n="meta.footer"></footer>
 
-<script src="js/gate.js?v=20260918"></script>
-<script src="js/lighthouse.js?v=20260918"></script>
-<script src="js/runtime.js?v=20260918"></script>
+<script src="js/gate.js?v=20260918.d0d5db"></script>
+<script src="js/dsl.js?v=20260918.d0d5db"></script>
+<script src="js/tasks.js?v=20260918.d0d5db"></script>
+<script src="js/lighthouse.js?v=20260918.d0d5db"></script>
+<script src="js/runtime.js?v=20260918.d0d5db"></script>
 </body>
 </html>

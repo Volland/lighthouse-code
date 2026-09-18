@@ -44,6 +44,12 @@ h3{font-size:1.3rem;margin:1.4em 0 .35em;color:#fff}
   color:var(--sunflower);display:block;margin-bottom:.3em;
 }
 
+/* ---------- поки не вибрано мову ----------
+   Книга двомовна, і слова підставляються скриптом. Щоб читач не побачив
+   спалах чужої мови, сторінка ховається на ті кілька мілісекунд, поки
+   js/i18n.js не проставить свої підписи. */
+html.i18n-boot body{visibility:hidden}
+
 /* ---------- top bar ---------- */
 .topbar{
   position:sticky;top:0;z-index:50;background:rgba(15,19,48,.82);
@@ -53,6 +59,35 @@ h3{font-size:1.3rem;margin:1.4em 0 .35em;color:#fff}
 .topbar .brand{font-family:"Fredoka";color:var(--beam);font-size:1.05rem;text-decoration:none}
 .topbar nav a{color:#cdd4ff;text-decoration:none;margin-left:16px;font-size:.95rem}
 .topbar nav a:hover{color:#fff}
+
+/* ---------- перемикач мови ---------- */
+.langpick{
+  display:inline-flex;align-items:center;margin-left:16px;
+  border:1px solid #46529c;border-radius:999px;overflow:hidden;vertical-align:middle;
+}
+.langpick .lang{
+  margin:0;padding:3px 10px;font-size:.82rem;font-family:"Fredoka",sans-serif;
+  letter-spacing:.5px;color:#9aa4dd;text-decoration:none;line-height:1.5;border-bottom:0;
+}
+.langpick .lang + .lang{border-left:1px solid #46529c}
+.langpick .lang:hover{color:#fff;background:#2b357655}
+.langpick .lang.on{background:var(--beam);color:#1b2350}
+/* той самий перемикач на дверях маяка — до книги ще не пускають,
+   а мову вибрати вже треба */
+.gate-lang{margin:18px 0 0}
+.gate-lang .langpick{margin-left:0}
+.brand-short{display:none}
+@media (max-width:620px){
+  /* довгі назви книжки не мають з'їдати півекрана */
+  .topbar .wrap{flex-wrap:wrap;gap:4px 0;padding:8px 20px}
+  .topbar .brand{font-size:.95rem}
+  .brand-full{display:none}
+  .brand-short{display:inline}
+  .topbar nav{display:flex;align-items:center;flex-wrap:wrap}
+  .topbar nav a{margin-left:0;margin-right:12px;font-size:.9rem}
+  .langpick{margin-left:0}
+  .topbar nav .langpick .lang{margin:0}
+}
 
 /* ---------- sections ---------- */
 section{padding:56px 0;position:relative}

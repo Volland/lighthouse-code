@@ -9,13 +9,29 @@
 
    node tools/stamp.mjs            → проставити свіжу версію
    ========================================================================== */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, resolve, relative } from 'node:path';
 
 const ROOT  = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const PAGES = ['index.html', 'sandbox.html', 'dlia-doroslogo.html'];
-const STAMP = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
+/* Дата — щоб версію було видно оком. Хвостик — відбиток самих файлів:
+   за день книгу правлять не раз, а браузер має помітити кожну правку. */
+function walk(dir, out = []){
+  for(const name of readdirSync(dir).sort()){
+    const full = join(dir, name);
+    if(statSync(full).isDirectory()) walk(full, out);
+    else if(/\.(css|js)$/.test(name)) out.push(full);
+  }
+  return out;
+}
+const files = ['css', 'js', 'content'].flatMap(d => walk(join(ROOT, d)));
+const sum = createHash('sha1');
+for(const f of files) sum.update(relative(ROOT, f)).update(readFileSync(f));
+const STAMP = new Date().toISOString().slice(0, 10).replace(/-/g, '') +
+              '.' + sum.digest('hex').slice(0, 6);
 
 let touched = 0;
 for(const page of PAGES){

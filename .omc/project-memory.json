@@ -52,15 +52,27 @@
   },
   "hotPaths": [
     {
+      "path": "js/runtime.js",
+      "accessCount": 3,
+      "lastAccessed": 1789760691004,
+      "type": "file"
+    },
+    {
       "path": "js/book.js",
       "accessCount": 2,
       "lastAccessed": 1789741795266,
       "type": "file"
     },
     {
-      "path": "js/runtime.js",
+      "path": "js/tasks.js",
       "accessCount": 2,
-      "lastAccessed": 1789741882398,
+      "lastAccessed": 1789760571226,
+      "type": "file"
+    },
+    {
+      "path": "index.html",
+      "accessCount": 2,
+      "lastAccessed": 1789760772469,
       "type": "file"
     },
     {
@@ -70,15 +82,57 @@
       "type": "file"
     },
     {
-      "path": "index.html",
+      "path": "js/lang/uk.js",
       "accessCount": 1,
-      "lastAccessed": 1789741824451,
+      "lastAccessed": 1789760303009,
       "type": "file"
     },
     {
-      "path": "js/tasks.js",
+      "path": "js/lang/de.js",
       "accessCount": 1,
-      "lastAccessed": 1789741890160,
+      "lastAccessed": 1789760385672,
+      "type": "file"
+    },
+    {
+      "path": "js/dsl.js",
+      "accessCount": 1,
+      "lastAccessed": 1789760434527,
+      "type": "file"
+    },
+    {
+      "path": "js/i18n.js",
+      "accessCount": 1,
+      "lastAccessed": 1789760498085,
+      "type": "file"
+    },
+    {
+      "path": "js/gate.js",
+      "accessCount": 1,
+      "lastAccessed": 1789760525849,
+      "type": "file"
+    },
+    {
+      "path": "sandbox.html",
+      "accessCount": 1,
+      "lastAccessed": 1789760785393,
+      "type": "file"
+    },
+    {
+      "path": "dlia-doroslogo.html",
+      "accessCount": 1,
+      "lastAccessed": 1789760799832,
+      "type": "file"
+    },
+    {
+      "path": "tools/check-tasks.mjs",
+      "accessCount": 1,
+      "lastAccessed": 1789760916935,
+      "type": "file"
+    },
+    {
+      "path": "content/story.de.js",
+      "accessCount": 1,
+      "lastAccessed": 1789761051396,
       "type": "file"
     }
   ],

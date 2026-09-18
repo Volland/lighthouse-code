@@ -1,5 +1,7 @@
 /* ==========================================================================
-   story.js — УВЕСЬ ТЕКСТ КНИГИ в одному місці.
+   story.uk.js — УВЕСЬ УКРАЇНСЬКИЙ ТЕКСТ КНИГИ в одному місці.
+   Німецький близнюк лежить поруч: content/story.de.js. Імена завдань (id)
+   в обох файлах однакові — тому зірки переходять із мови в мову.
    Тут немає жодної логіки: лише історія, розбори, схеми й приклади коду.
    Малює це все js/book.js. Хочеш змінити книгу — міняй тільки цей файл.
 
@@ -682,10 +684,10 @@ window.BOOK.chapters.push({
             <rect x="6" y="150" width="88" height="30" rx="4" fill="#d4f5ef" stroke="#1c7a6e"/><text x="50" y="169">обернути промінь</text>
             <line x1="30" y1="92" x2="30" y2="150" stroke="#5b567e" stroke-width="2" marker-end="url(#ar2)"/>
             <line x1="94" y1="165" x2="150" y2="165" stroke="#5b567e" stroke-width="2"/>
-            <line x1="150" y1="165" x2="150" y2="130" stroke="#5b567e" stroke-width="2" marker-end="url(#ar2)"/><text x="150" y="152" fill="#5b567e">повторити</text>
+            <line x1="150" y1="165" x2="150" y2="130" stroke="#5b567e" stroke-width="2" marker-end="url(#ar2)"/><text x="192" y="160" font-size="10" fill="#5b567e">повторити</text>
             <line x1="230" y1="92" x2="266" y2="92" stroke="#5b567e" stroke-width="2"/><text x="250" y="84" fill="#b03e73">ні</text>
             <line x1="266" y1="92" x2="266" y2="210" stroke="#5b567e" stroke-width="2"/>
-            <rect x="200" y="212" width="130" height="30" rx="15" fill="#ffe0ee" stroke="#b03e73"/><text x="265" y="231">світанок — кінець</text>
+            <rect x="180" y="212" width="118" height="30" rx="15" fill="#ffe0ee" stroke="#b03e73"/><text x="239" y="231">світанок — кінець</text>
             <line x1="266" y1="210" x2="266" y2="212" stroke="#5b567e" stroke-width="2" marker-end="url(#ar2)"/>
           </g>
         </svg>` }

@@ -1,11 +1,15 @@
 /* ==========================================================================
-   book.js — малює книгу з тексту, що лежить у content/story.js.
+   book.js — малює книгу з тексту, що лежить у content/story.<мова>.js.
    Розмітка тут, текст — там. Щоб змінити історію, цей файл чіпати не треба.
+   Якою мовою брати текст і як підписати рамки, каже js/i18n.js.
    ========================================================================== */
 (function(){
   const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => (
     { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]
   ));
+
+  /* підписи блоків — мовою книги (js/lang/*.js) */
+  const T = () => window.I18N.lang.book;
 
   /* блоки, які вміє малювати книга */
   const RENDER = {
@@ -15,7 +19,7 @@
     h3:       b => `<h3>${b.text}</h3>`,
     pull:     b => `<div class="pull">${b.html}</div>`,
 
-    max:      b => `<div class="maxnote"><span class="who">🖊 з журналу Макса</span>` +
+    max:      b => `<div class="maxnote"><span class="who">${T().maxNote}</span>` +
                    `${b.p.map(p=>`<p>${p}</p>`).join('')}</div>`,
 
     postcard: b => `<div class="postcard"><div class="from">${b.from}</div>` +
@@ -36,23 +40,23 @@
 
     legend:   b => `<div class="legend">${b.items.map(i=>`<div>${i.chip} ${i.text}</div>`).join('')}</div>`,
 
-    applied:  b => `<div class="applied"><span class="tag">У житті</span>` +
+    applied:  b => `<div class="applied"><span class="tag">${T().appliedTag}</span>` +
                    `<strong>${b.title}</strong> ${b.html}` +
                    (b.id ? `<label class="did"><input type="checkbox" data-did="${esc(b.id)}"` +
-                           `${Progress.isDone(b.id) ? ' checked' : ''}> зроблено</label>` : '') +
+                           `${Progress.isDone(b.id) ? ' checked' : ''}> ${T().doneLabel}</label>` : '') +
                    `</div>`,
 
     secret:   b => `<div class="secret"><h3>${b.title}</h3>` +
                    `${b.p.map(p=>`<p>${p}</p>`).join('')}</div>`,
 
     /* коротко й простими словами — якір після складного місця */
-    gist:     b => `<p class="gist"><span>Коротше кажучи</span> ${b.html}</p>`,
+    gist:     b => `<p class="gist"><span>${T().gistLabel}</span> ${b.html}</p>`,
 
     /* слово на полях: що воно означає насправді */
     word:     b => `<div class="word"><b>${esc(b.term)}</b> — ${b.html}</div>`,
 
     /* міст до справжнього Python */
-    bridge:   b => `<div class="bridge"><span class="tag">Як це звучить у великому світі</span>` +
+    bridge:   b => `<div class="bridge"><span class="tag">${T().bridgeTag}</span>` +
                    `<table><tbody>` + b.pairs.map(([a, c, note]) =>
                      `<tr><td class="ours">${a}</td><td class="arrow">→</td>` +
                      `<td class="theirs"><code>${esc(c)}</code></td>` +
@@ -61,7 +65,7 @@
                    (b.html ? `<p class="small">${b.html}</p>` : '') + `</div>`,
 
     /* картка «коли не працює» */
-    debug:    b => `<div class="debugcard"><span class="tag">Коли не працює</span>` +
+    debug:    b => `<div class="debugcard"><span class="tag">${T().debugTag}</span>` +
                    `<ol>${b.steps.map(x=>`<li>${x}</li>`).join('')}</ol>` +
                    (b.html ? `<p class="small">${b.html}</p>` : '') + `</div>`,
 
@@ -78,14 +82,14 @@
     /* завдання: те саме, але в рамці з метою, підказками й зіркою */
     task:     b => `<div class="task${b.kind === 'fix' ? ' fix' : ''}" id="${esc(b.id)}">
         <div class="task-head">
-          <span class="task-tag${b.kind === 'fix' ? ' fix' : ''}">${b.kind === 'fix' ? 'Полагодь' : 'Завдання'}</span>
+          <span class="task-tag${b.kind === 'fix' ? ' fix' : ''}">${b.kind === 'fix' ? T().fixTag : T().taskTag}</span>
           <h3>${b.title}</h3>
-          <span class="star" data-star="${esc(b.id)}" title="зроблено">${Progress.isDone(b.id) ? '★' : '☆'}</span>
+          <span class="star" data-star="${esc(b.id)}" title="${esc(T().doneLabel)}">${Progress.isDone(b.id) ? '★' : '☆'}</span>
         </div>
         <div class="task-goal">${b.goal}</div>
         <div class="sb"></div>
-        ${(b.hints || []).map((h, i) => `<details class="hint"><summary>Підказка${b.hints.length > 1 ? ' ' + (i+1) : ''}</summary><div>${h}</div></details>`).join('')}
-        ${b.solution ? `<details class="hint solution"><summary>Підглянути в журнал доглядача</summary><pre><code>${esc(b.solution.trim())}</code></pre></details>` : ''}
+        ${(b.hints || []).map((h, i) => `<details class="hint"><summary>${T().hint}${b.hints.length > 1 ? ' ' + (i+1) : ''}</summary><div>${h}</div></details>`).join('')}
+        ${b.solution ? `<details class="hint solution"><summary>${T().solution}</summary><pre><code>${esc(b.solution.trim())}</code></pre></details>` : ''}
       </div>`,
 
     /* журнал завдань — перелік усього, що можна зробити самому */
@@ -131,7 +135,7 @@
         el.dataset.ready = '1';
         const isTask = spec.t === 'task';
         new Sandbox(el, {
-          title:     isTask ? (spec.sbTitle || 'Спробуй сам') : spec.title,
+          title:     isTask ? (spec.sbTitle || window.I18N.lang.sb.taskTitle) : spec.title,
           seed:      spec.code,
           fuel:      spec.fuel,
           ticks:     spec.ticks,
@@ -159,6 +163,7 @@
   function renderProgress(book){
     const box = document.getElementById('progress-box');
     if(!box) return;
+    const P = T().progress;
     const tasks = collectTasks(book);
     const done  = tasks.filter(t => Progress.isDone(t.id)).length;
     const group = (kind, head) => {
@@ -171,19 +176,17 @@
         `<span class="where">${esc(t.chapter.num)}</span></li>`).join('') + `</ul>`;
     };
     box.innerHTML =
-      `<h3>Журнал завдань</h3>` +
-      `<p class="count">Зроблено <b>${done}</b> із <b>${tasks.length}</b>.</p>` +
-      group('code', 'Те, що пишеться в маяк') +
-      group('life', 'Те, що робиться поза екраном') +
+      `<h3>${P.title}</h3>` +
+      `<p class="count">${P.count(done, tasks.length)}</p>` +
+      group('code', P.groupCode) +
+      group('life', P.groupLife) +
       `<div class="progress-keep">
-         <button type="button" class="btn ghost small" data-save-journal>↓ Зберегти журнал у файл</button>
-         <label class="btn ghost small" tabindex="0">↑ Повернути з файлу
+         <button type="button" class="btn ghost small" data-save-journal>${P.save}</button>
+         <label class="btn ghost small" tabindex="0">${P.load}
            <input type="file" accept="application/json,.json" data-load-journal hidden>
          </label>
        </div>` +
-      `<p class="small">Журнал пам'ятає цей браузер. Якщо відкрити книгу на іншому
-        комп'ютері — зірки почнуться спочатку. Щоб узяти їх із собою, збережи журнал
-        у файл і поверни його там.</p>`;
+      `<p class="small">${P.note}</p>`;
   }
 
   function wire(book){
@@ -198,7 +201,7 @@
     document.addEventListener('change', (e)=>{
       const inp = e.target.closest('[data-load-journal]');
       if(!inp || !inp.files || !inp.files[0]) return;
-      Progress.load(inp.files[0], ok => { if(!ok) alert('Це не схоже на журнал маяка.'); });
+      Progress.load(inp.files[0], ok => { if(!ok) alert(T().loadFail); });
       inp.value = '';
     });
 
@@ -244,7 +247,10 @@
   function start(){
     const mount = document.getElementById('book');
     if(!mount) return;
-    if(!window.BOOK){ mount.innerHTML = '<div class="wrap"><p>Не знайшовся текст книги.</p></div>'; return; }
+    if(!window.BOOK){
+      mount.innerHTML = `<div class="wrap"><p>${esc(T().noBook)}</p></div>`;
+      return;
+    }
     const book = pick(window.BOOK, mount);
     render(book, mount);
     renderProgress(book);
@@ -253,6 +259,6 @@
     if(foot && book.footer) foot.textContent = book.footer;
   }
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
-  else start();
+  /* книга малюється, коли готові дві речі: сторінка й текст потрібною мовою */
+  Promise.all([window.I18N.ready, window.I18N.loadBook()]).then(start);
 })();

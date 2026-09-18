@@ -3,11 +3,14 @@
    і програє послідовність дій, яку зібрала пісочниця під час запуску коду.
    ========================================================================== */
 
-const BEAM_SVG = `
+/* мовний пакет книги: підписи на маяку говорять тією самою мовою, що й текст */
+const VLANG = () => (window.I18N && window.I18N.lang) || window.LH_LANG;
+
+const beamSVG = () => `
 <svg viewBox="0 0 170 170" width="170" style="position:absolute;inset:0" aria-hidden="true">
   <circle cx="85" cy="85" r="82" fill="#0f1330" stroke="#2b3576"/>
   <circle cx="85" cy="85" r="52" fill="none" stroke="#2b3576" stroke-dasharray="3 6"/>
-  <text x="85" y="14" text-anchor="middle" font-family="Nunito" font-size="9" fill="#5b66c4">північ</text>
+  <text x="85" y="14" text-anchor="middle" font-family="Nunito" font-size="9" fill="#5b66c4">${VLANG().py.val.north}</text>
 </svg>`;
 
 const BEAM_ROT = `
@@ -30,7 +33,7 @@ class LighthouseView {
     this.mount = mount;
     this.stage = document.createElement('div');
     this.stage.className = 'beam-stage';
-    this.stage.innerHTML = BEAM_SVG + `<div class="beam-rot">${BEAM_ROT}</div>`;
+    this.stage.innerHTML = beamSVG() + `<div class="beam-rot">${BEAM_ROT}</div>`;
     this.rot  = this.stage.querySelector('.beam-rot');
     this.ray  = this.stage.querySelector('.beam-ray');
     this.core = this.stage.querySelector('.beam-core');
@@ -50,8 +53,8 @@ class LighthouseView {
   /* jars — {ім'я банки: скільки насінин} */
   reset(jars){
     this.angle = 0;
-    this.light = 'вимкнено';
-    this.lens  = 'північ';
+    this.light = VLANG().view.off;
+    this.lens  = VLANG().py.val.north;
     this.rot.style.transform = 'rotate(0deg)';
     this.ray.style.opacity = 0;
     this.core.setAttribute('fill', '#3a4160');
@@ -60,9 +63,10 @@ class LighthouseView {
   }
 
   renderStatus(){
+    const v = VLANG().view;
     this.status.innerHTML =
-      `світло: <b>${this.light}</b><br>` +
-      `лінза дивиться: <b>${this.lens}</b>`;
+      `${v.statusLight}: <b>${this.light}</b><br>` +
+      `${v.statusLens}: <b>${this.lens}</b>`;
   }
 
   setJars(jars){
@@ -79,7 +83,7 @@ class LighthouseView {
       const y = 30 - Math.floor(i / 4) * 6;
       return `<ellipse cx="${x}" cy="${y}" rx="2.6" ry="3.4" fill="#f5a623" transform="rotate(${(i*37)%40 - 20} ${x} ${y})"/>`;
     }).join('');
-    return `<div class="jar" title="банка «${name}»">
+    return `<div class="jar" title="${VLANG().view.jarTitle(name)}">
       <svg viewBox="0 0 40 42" width="34" aria-hidden="true">
         <rect x="11" y="2" width="18" height="4" rx="1.5" fill="#c9d2ff" opacity=".8"/>
         <path d="M6,8 h28 a2,2 0 0 1 2,2 v26 a4,4 0 0 1 -4,4 h-24 a4,4 0 0 1 -4,-4 v-26 a2,2 0 0 1 2,-2 z"
@@ -95,10 +99,10 @@ class LighthouseView {
   apply(a){
     switch(a.type){
       case 'clean': case 'trim': case 'water': break;   // тихі кроки, маяк не змінюється
-      case 'lens':   this.lens = a.arg || 'північ'; break;
-      case 'ignite': this.light = 'увімкнено';   this.ray.style.opacity = 1;   this.core.setAttribute('fill', '#ffd447'); break;
-      case 'full':   this.light = 'повне';       this.ray.style.opacity = 1;   this.core.setAttribute('fill', '#ffd447'); break;
-      case 'dim':    this.light = 'притлумлене'; this.ray.style.opacity = .45; this.core.setAttribute('fill', '#ffb03a'); break;
+      case 'lens':   this.lens = a.arg || VLANG().py.val.north; break;
+      case 'ignite': this.light = VLANG().view.on;   this.ray.style.opacity = 1;   this.core.setAttribute('fill', '#ffd447'); break;
+      case 'full':   this.light = VLANG().view.full; this.ray.style.opacity = 1;   this.core.setAttribute('fill', '#ffd447'); break;
+      case 'dim':    this.light = VLANG().view.dim;  this.ray.style.opacity = .45; this.core.setAttribute('fill', '#ffb03a'); break;
       case 'rotate': this.angle += 60; this.rot.style.transform = `rotate(${this.angle}deg)`; break;
       case 'jars':   this.setJars(safeParse(a.arg, this.jars)); return;   // банки статус не чіпають
     }
