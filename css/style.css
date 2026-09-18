@@ -218,3 +218,106 @@ html.gated{overflow:hidden}
 .gate-fb.ok{color:#8ff0c2}
 .gate-fb.no{color:#ffb3ad}
 .gate .beam-on{transition:opacity .6s ease}
+
+/* ==========================================================================
+   Записка Макса — голос оповідача на полях журналу
+   ========================================================================== */
+.maxnote{
+  background:rgba(233,185,73,.10);border:1px dashed var(--tsugi);border-radius:12px;
+  padding:14px 18px;margin:22px 0;color:#f2e9d4;font-style:italic;
+}
+.maxnote .who{
+  font-family:"Fredoka";font-style:normal;font-size:.85rem;color:var(--tsugi);
+  display:block;margin-bottom:2px;
+}
+.maxnote p{margin:.3em 0}
+
+/* ---------- списки в журналі ---------- */
+.journal ul,.journal ol{margin:.5em 0 .5em 1.1em;padding-left:.6em}
+.journal li{margin:.25em 0}
+.journal ol li::marker{font-family:"Fredoka";color:#b03e73}
+
+/* ---------- банки з насінням біля маяка ---------- */
+.jars{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:100%}
+.jar{
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+  font-family:"JetBrains Mono";font-size:.72rem;color:#c7cffb;
+}
+.jar-name{color:#9aa4dd}
+.jar-count{color:var(--beam);font-weight:500;font-size:.85rem;line-height:1}
+
+.sb-controls .hint{align-self:center;opacity:.7}
+@media (max-width:560px){.sb-controls .hint{display:none}}
+
+/* ---------- посилання, що виглядає кнопкою ---------- */
+.btn-link,a.btn{
+  display:inline-block;font-family:"Fredoka",sans-serif;font-size:1rem;text-decoration:none;
+  background:var(--beam);color:#4a3a00;border-radius:999px;padding:10px 22px;
+  transition:filter .15s,transform .1s;
+}
+.btn-link:hover,a.btn:hover{filter:brightness(1.06)}
+.btn-link:active,a.btn:active{transform:translateY(1px)}
+
+/* ==========================================================================
+   Завдання — те, що дитина робить сама
+   ========================================================================== */
+.task{
+  background:rgba(63,179,165,.07);border:1px solid #3a4699;border-left:4px solid var(--sea);
+  border-radius:14px;padding:18px 20px;margin:28px 0;scroll-margin-top:70px;
+}
+.task.done{border-left-color:var(--beam);background:rgba(255,212,71,.07)}
+.task-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.task-head h3{margin:0;color:#fff;font-size:1.2rem;flex:1}
+.task-tag{
+  font-family:"Fredoka";font-size:.78rem;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--sea);border:1px solid var(--sea);border-radius:999px;padding:2px 10px;
+}
+.task .star{font-size:1.3rem;color:var(--beam);line-height:1}
+.task-goal{margin:8px 0 2px;color:#e7ecff}
+.task-goal code{background:#00000030;border-radius:5px;padding:1px 5px;font-family:"JetBrains Mono";font-size:.85em}
+.task .sandbox{margin:14px 0 10px}
+
+.hint{
+  background:#0f1330;border:1px dashed #5b66c4;border-radius:10px;
+  padding:8px 14px;margin:8px 0;color:#c7cffb;font-size:.95rem;
+}
+.hint summary{cursor:pointer;font-family:"Fredoka";color:var(--tsugi);list-style:none}
+.hint summary::-webkit-details-marker{display:none}
+.hint summary::before{content:"▸ ";color:var(--tsugi)}
+.hint[open] summary::before{content:"▾ "}
+.hint > div,.hint pre{margin:8px 0 4px}
+.hint pre{
+  background:#0c1029;border:1px solid #2b3576;border-radius:8px;padding:10px 12px;
+  overflow:auto;font-family:"JetBrains Mono";font-size:.85rem;color:#e7ecff;
+}
+.hint code{font-family:"JetBrains Mono"}
+
+/* вердикт маяка після запуску */
+.verdict{border-radius:10px;padding:10px 14px;margin-top:10px;font-size:.95rem}
+.verdict.ok{background:rgba(143,240,194,.12);border:1px solid #8ff0c2;color:#c9ffe6}
+.verdict.no{background:rgba(255,179,173,.10);border:1px solid #ffb3ad;color:#ffdad7}
+.verdict ul{margin:6px 0 0 1.1em;padding:0}
+.verdict li{margin:.2em 0}
+.verdict code{background:#00000030;border-radius:5px;padding:1px 5px;font-family:"JetBrains Mono";font-size:.85em}
+
+/* галочка «я спробував» у блоці «У житті» */
+.applied .did{
+  display:flex;align-items:center;gap:8px;margin-top:10px;
+  font-size:.92rem;color:#bfe9e2;cursor:pointer;
+}
+.applied .did input{width:18px;height:18px;accent-color:var(--sea);cursor:pointer}
+
+/* журнал завдань в епілозі */
+.progress-box{
+  background:#0f1330;border:1px solid #3a4699;border-radius:14px;padding:20px 22px;margin:26px 0;
+}
+.progress-box h3{margin-top:0;color:var(--beam)}
+.progress-box h4{font-family:"Fredoka";font-size:1rem;color:#cdd4ff;margin:14px 0 4px}
+.progress-box .count{color:#cdd4ff;margin:0}
+.progress-list{list-style:none;margin:0;padding:0}
+.progress-list li{display:flex;align-items:baseline;gap:8px;padding:3px 0;flex-wrap:wrap}
+.progress-list .mark{color:var(--beam)}
+.progress-list li.done a{color:#8ff0c2}
+.progress-list a{color:#dfe4ff;text-decoration:none;border-bottom:1px dotted #5b66c4}
+.progress-list .where{color:#7d86c0;font-size:.82rem;margin-left:auto}
+.progress-box .small{color:#9aa4dd;font-size:.85rem;margin-bottom:0}
