@@ -105,13 +105,28 @@ class LighthouseView {
     this.renderStatus();
   }
 
+  /* скільки дій ще варто програвати по одній; далі це вже не показ, а покарання */
+  static get MAX_ANIMATED(){ return 80; }
+
   /* програти список дій із затримкою; повертає Promise.
-     Довгі програми програються швидше, щоб дитина не чекала хвилину. */
+     Довгі програми програються швидше, щоб дитина не чекала хвилину.
+     А зовсім довгі (зациклився) — показуються одразу: дитині потрібна
+     підказка зараз, а не через півхвилини споглядання променя. */
   play(actions, onLog){
     return new Promise(resolve => {
       if(!actions.length){ resolve(); return; }
       const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
       const visible = actions.filter(a => a.type !== 'jars').length || 1;
+
+      if(visible > LighthouseView.MAX_ANIMATED){
+        for(const a of actions){
+          if(a.type === 'print'){ if(onLog) onLog(a.arg); }
+          else this.apply(a);
+        }
+        resolve();
+        return;
+      }
+
       const gap = reduce ? 0 : Math.max(60, Math.min(300, Math.round(4000 / visible)));
       let i = 0;
       const step = ()=>{

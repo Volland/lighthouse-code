@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=20260918">
 <script>
   (function(){try{
     document.documentElement.classList.add(
@@ -52,7 +52,7 @@
   <p class="story">Тут можна писати будь-що. Постав погоду, натисни «Запустити» — і маяк
   оживе. Помиляйся скільки завгодно: маяк спокійно підкаже, що не так.</p>
 
-  <div class="sb" data-scenarios data-ticks="6" data-fuel="12" data-cans="3" data-seed="#seedFree" data-title="Пиши, що завгодно"></div>
+  <div class="sb" data-scenarios data-night data-ticks="6" data-fuel="12" data-cans="3" data-seed="#seedFree" data-title="Пиши, що завгодно"></div>
   <script type="text/x-python" id="seedFree">
 # Спробуй! Наприклад — запали маяк, поверни промінь кілька разів
 # і долий у лампу каністру гасу з комори.
@@ -65,8 +65,9 @@ def запалити_маяк():
 
 запалити_маяк()
 
-for раз in range(4):
+while темно():
     обернути_промінь()
+    ніч = ніч - 1
 
 каністри = каністри - 1
 запас = запас + 4
@@ -90,12 +91,14 @@ for раз in range(4):
     </ul>
     <p><strong>Питання й лічба (щось відповідають):</strong></p>
     <ul>
-      <li><code>темно()</code> — чи ще темно (ніч триває 6 обертів)</li>
+      <li><code>темно()</code> — чи ще є насіння в банці «ніч». Саме воно нічого не міняє:
+          ніч коротшає тільки тоді, коли ти сам напишеш <code>ніч = ніч - 1</code></li>
       <li><code>гість_на_стежці()</code> — чи є гість (залежить від погоди)</li>
       <li><code>полічити(ряд)</code> — скільки всього в ряду</li>
     </ul>
     <p><strong>Банки на підвіконні (числа, які можна міняти):</strong></p>
     <ul>
+      <li><code>ніч</code> — скільки обертів лишилось до світанку (спочатку 6)</li>
       <li><code>запас</code> — скільки ночей пального лишилось у лампі</li>
       <li><code>каністри</code> — скільки каністр гасу чекає в коморі (одна каністра — чотири ночі)</li>
     </ul>
@@ -108,14 +111,20 @@ for раз in range(4):
     </ul>
     <p class="small">Працюють і звичайні речі Python: <code>if</code>, <code>while</code>,
     <code>for</code>, <code>def</code>, <code>return</code>, <code>range()</code>, числа, слова.</p>
+    <p><strong>Правило циклу:</strong></p>
+    <p class="small">У <code>while темно():</code> усередині мусить бути
+    <code>ніч = ніч - 1</code>. Інакше банка «ніч» ніколи не спорожніє, і цикл
+    крутитиметься без кінця — Цугі тебе зупинить і скаже про це.</p>
+    <p class="small">А якщо написати ім'я дії <em>без</em> дужок — маяк промовчить,
+    зате озветься Цербер.</p>
   </div>
 </div>
 </section>
 
 <footer>Макс, Цугі й Цербер · світло Маяку</footer>
 
-<script src="js/gate.js"></script>
-<script src="js/lighthouse.js"></script>
-<script src="js/runtime.js"></script>
+<script src="js/gate.js?v=20260918"></script>
+<script src="js/lighthouse.js?v=20260918"></script>
+<script src="js/runtime.js?v=20260918"></script>
 </body>
 </html>

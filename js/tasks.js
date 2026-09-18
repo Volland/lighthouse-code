@@ -114,10 +114,25 @@ const RULES = {
 
   /* дитина завела власну банку — будь-яку, крім тих, що вже стояли на маяку */
   newJar: (res, spec) => {
-    const own = Object.keys(res.jars || {}).filter(n => n !== 'запас' && n !== 'каністри');
+    const own = Object.keys(res.jars || {}).filter(n => !['запас','каністри','ніч'].includes(n));
     return own.length >= (spec.min ?? 1) ||
       'Своєї банки на підвіконні не видно. Придумай їй підпис і поклади туди число — ' +
       'наприклад <code>дрова = 5</code>.';
+  },
+
+  /* дитина НЕ повторювала руками те, що мав зробити цикл чи звичка */
+  notUses: (res, spec) => {
+    const p = CODE_PATTERNS[spec.what];
+    if(!p) return true;
+    return !p.re.test(res.code) ||
+      (spec.why || `Тут краще обійтись без <code>${spec.what}</code>.`);
+  },
+
+  /* скільки разів у коді зустрічається рядок (щоб ловити «скопіював десять разів») */
+  atMostLines: (res, spec) => {
+    const n = String(res.code).split('\n').filter(l => l.trim() && !l.trim().startsWith('#')).length;
+    return n <= spec.max ||
+      `Рядків аж ${n}. Те саме можна сказати коротше — не більш ніж ${spec.max}.`;
   },
 
   /* полито соняшників */
@@ -156,7 +171,33 @@ const Progress = {
     try{ localStorage.setItem(STORE_KEY, JSON.stringify(map)); }catch(e){}
     document.dispatchEvent(new CustomEvent('lh:progress', { detail:{ id, done } }));
   },
-  toggle(id){ const d = !this.isDone(id); this.mark(id, d); return d; }
+  toggle(id){ const d = !this.isDone(id); this.mark(id, d); return d; },
+
+  /* журнал у файл — щоб зірки не зникли разом із почищеним браузером */
+  save(){
+    const blob = new Blob([JSON.stringify(this.all(), null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'журнал-маяка.json';
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+  },
+
+  /* повернути журнал із файлу (зірки додаються до вже наявних) */
+  load(file, done){
+    const r = new FileReader();
+    r.onload = ()=>{
+      let map = null;
+      try{ map = JSON.parse(r.result); }catch(e){}
+      if(!map || typeof map !== 'object'){ if(done) done(false); return; }
+      const all = this.all();
+      Object.keys(map).forEach(id => { if(map[id]) all[id] = true; });
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(all)); }catch(e){}
+      document.dispatchEvent(new CustomEvent('lh:progress', { detail:{ id:'*', done:true } }));
+      if(done) done(true);
+    };
+    r.readAsText(file);
+  }
 };
 
 window.LighthouseChecks = { checkAll, RULES, ACTION_UA };

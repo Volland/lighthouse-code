@@ -5,8 +5,10 @@
      • проганяє авторський розв'язок крізь справжній пролог маяка
        (звичайним python3 — Pyodide тут не потрібен) і перевіряє,
        що він проходить власні checks і всі trials;
-     • проганяє стартовий код і перевіряє, що той НЕ проходить
+     • проганяє стартовий код — разом із його trials — і перевіряє, що той НЕ проходить
        (інакше дитина отримала б зірку ні за що) і хоча б не падає з помилкою.
+       Для завдань «Полагодь» (kind:'fix') падіння стартового коду — це нормально:
+       там код зламаний навмисне, і зламати його мусить бути видно.
 
    node tools/check-tasks.mjs        → звіт і код виходу 0/1
    ========================================================================== */
@@ -46,7 +48,7 @@ for run in job['runs']:
     w = run['world']
     ns = {'_cfg_ticks': w.get('ticks', 6), '_cfg_fuel': w.get('fuel', 12),
           '_cfg_cans': w.get('cans', 3), '_cfg_wind': w.get('wind', 'тиша'),
-          '_cfg_guest': w.get('guest', False)}
+          '_cfg_guest': w.get('guest', False), '_cfg_shownight': w.get('night', False)}
     err = None
     try:
         exec(compile(prelude, '<prelude>', 'exec'), ns)
@@ -68,14 +70,17 @@ const runs = [];
 const plan = [];
 for(const t of tasks){
   const base = {};
-  for(const k of ['ticks','fuel','cans']) if(k in t) base[k] = t[k];
-  const item = { task: t, solution: null, start: null, trials: [] };
+  for(const k of ['ticks','fuel','cans','night']) if(k in t) base[k] = t[k];
+  const item = { task: t, solution: null, start: null, trials: [], startTrials: [] };
   if(t.solution){ item.solution = runs.length; runs.push({ code: t.solution, world: base }); }
   item.start = runs.length; runs.push({ code: t.code, world: base });
   for(const tr of (t.trials || [])){
     if(!t.solution) continue;
     item.trials.push({ label: tr.label, checks: tr.checks, at: runs.length });
     runs.push({ code: t.solution, world: Object.assign({}, base, tr.world || {}) });
+    /* ті самі погоди, але для стартового коду — щоб зірка не діставалась задарма */
+    item.startTrials.push({ label: tr.label, checks: tr.checks, at: runs.length });
+    runs.push({ code: t.code, world: Object.assign({}, base, tr.world || {}) });
   }
   plan.push(item);
 }
@@ -109,9 +114,18 @@ for(const item of plan){
   }
 
   const start = results[item.start];
-  if(start.error) notes.push(`стартовий код одразу падає — ${start.error}`);
-  else if(item.solution !== null && checkAll(t.checks, start).ok)
-    notes.push('стартовий код уже проходить перевірку — зірка задарма');
+  const mayCrash = t.kind === 'fix';
+  if(start.error){
+    if(!mayCrash) notes.push(`стартовий код одразу падає — ${start.error}`);
+  }else if(item.solution !== null){
+    /* стартовий код «проходить» лише тоді, коли пройшов і базові checks, і всі погоди */
+    const passes = checkAll(t.checks, start).ok &&
+      item.startTrials.every(tr => {
+        const r = results[tr.at];
+        return !r.error && checkAll(tr.checks, r).ok;
+      });
+    if(passes) notes.push('стартовий код уже проходить перевірку — зірка задарма');
+  }
 
   if(notes.length){ problems++; console.log(`❌ ${t.id} — ${t.title}\n   · ` + notes.join('\n   · ')); }
   else if(item.solution !== null) console.log(`✅ ${t.id} — ${t.title}`);

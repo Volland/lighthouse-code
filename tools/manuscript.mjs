@@ -49,7 +49,7 @@ function block(b, depth){
     case 'legend':   b.items.forEach(i => push(`- ${text(i.text)}`)); push(); break;
     case 'sb':       push(`**Пісочниця: ${b.title || 'без назви'}**`); push();
                      push('```python'); push(b.code.trim()); push('```'); push(); break;
-    case 'task':     push(`**Завдання: ${text(b.title)}**`); push();
+    case 'task':     push(`**${b.kind === 'fix' ? 'Полагодь' : 'Завдання'}: ${text(b.title)}**`); push();
                      push(text(b.goal)); push();
                      push('```python'); push(b.code.trim()); push('```'); push();
                      (b.hints || []).forEach((h, n) => push(`*Підказка ${n+1}:* ${text(h)}`));
@@ -57,6 +57,17 @@ function block(b, depth){
                      if(b.solution){ push('*Розв\'язок (у книзі — під «підглянути»):*'); push();
                                      push('```python'); push(b.solution.trim()); push('```'); push(); }
                      break;
+    case 'gist':     push(`> **Коротше кажучи** ${text(b.html)}`); push(); break;
+    case 'word':     push(`> **${text(b.term)}** — ${text(b.html)}`); push(); break;
+    case 'bridge':   push('**Як це звучить у великому світі**'); push();
+                     push('| у книзі | у великому світі | |');
+                     push('|---|---|---|');
+                     b.pairs.forEach(([a, c, n]) => push(`| ${text(a)} | \`${text(c)}\` | ${text(n || '')} |`));
+                     push();
+                     if(b.html){ push(text(b.html)); push(); } break;
+    case 'debug':    push('**Коли не працює**'); push();
+                     b.steps.forEach((x, n) => push(`${n+1}. ${text(x)}`)); push();
+                     if(b.html){ push(text(b.html)); push(); } break;
     case 'progress': push('*[журнал завдань — перелік зроблених зірок]*'); push(); break;
     case 'applied':  push(`**У житті — ${text(b.title)}** ${text(b.html)}`); push(); break;
     case 'secret':   push(`### ${text(b.title)}`); push();

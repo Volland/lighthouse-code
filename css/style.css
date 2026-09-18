@@ -321,3 +321,109 @@ html.gated{overflow:hidden}
 .progress-list a{color:#dfe4ff;text-decoration:none;border-bottom:1px dotted #5b66c4}
 .progress-list .where{color:#7d86c0;font-size:.82rem;margin-left:auto}
 .progress-box .small{color:#9aa4dd;font-size:.85rem;margin-bottom:0}
+
+/* ==========================================================================
+   Опори для читача: «коротше кажучи», слово на полях, міст до Python,
+   картка «коли не працює» — і палітра команд над пісочницею.
+   ========================================================================== */
+
+/* ---------- «Коротше кажучи» — якір після складного місця ---------- */
+.gist{
+  background:rgba(255,212,71,.10);border-left:4px solid var(--beam);border-radius:0 10px 10px 0;
+  padding:10px 16px;margin:14px 0;color:#f6efdb;
+}
+.gist > span{
+  font-family:"Fredoka";color:var(--beam);font-size:.85rem;display:block;margin-bottom:1px;
+}
+.gist code{background:#00000030;border-radius:5px;padding:1px 5px;font-family:"JetBrains Mono";font-size:.85em}
+
+/* ---------- слово на полях ---------- */
+.word{
+  border-left:3px dotted var(--sunflower);background:rgba(245,166,35,.07);
+  border-radius:0 10px 10px 0;padding:8px 16px;margin:12px 0;
+  font-size:.94rem;color:#f0e4cf;
+}
+.word b{font-family:"Fredoka";color:var(--sunflower);font-weight:600}
+
+/* ---------- міст до справжнього Python ---------- */
+.bridge{
+  background:rgba(91,102,196,.12);border:1px solid #5b66c4;border-radius:12px;
+  padding:16px 20px;margin:24px 0;
+}
+.bridge > .tag{
+  font-family:"Fredoka";font-size:.85rem;color:#a9b4ff;display:block;margin-bottom:8px;
+}
+.bridge table{width:100%;border-collapse:collapse;font-size:.95rem}
+.bridge td{padding:5px 8px 5px 0;vertical-align:baseline;border-top:1px solid #333c78}
+.bridge tr:first-child td{border-top:none}
+.bridge .ours{color:#e7ecff;white-space:nowrap}
+.bridge .arrow{color:#7d86c0;width:1.6em;text-align:center}
+.bridge .theirs code{
+  font-family:"JetBrains Mono";font-size:.88em;background:#00000040;color:var(--beam);
+  border-radius:5px;padding:2px 7px;white-space:nowrap;
+}
+.bridge .note{color:#9aa4dd;font-size:.86rem;padding-left:10px}
+.bridge .small{margin:10px 0 0;color:#c7cffb}
+@media (max-width:560px){
+  .bridge .note{display:none}
+  .bridge .ours{white-space:normal}
+}
+
+/* ---------- картка «коли не працює» ---------- */
+.debugcard{
+  background:rgba(226,87,76,.08);border:1px solid var(--crimson);border-radius:12px;
+  padding:16px 20px;margin:24px 0;
+}
+.debugcard > .tag{
+  font-family:"Fredoka";font-size:.9rem;color:#ff9d95;display:block;margin-bottom:6px;
+}
+.debugcard ol{margin:.4em 0 .4em 1.1em;padding-left:.6em}
+.debugcard li{margin:.35em 0}
+.debugcard li::marker{font-family:"Fredoka";color:var(--crimson)}
+.debugcard .small{margin:10px 0 0;color:#e8d5d3}
+
+/* ---------- плашка «Полагодь» ---------- */
+.task-tag.fix{background:rgba(226,87,76,.2);color:#ff9d95;border-color:var(--crimson)}
+.task.fix{border-left-color:var(--crimson);background:rgba(226,87,76,.06)}
+.task.fix.done{border-left-color:var(--beam);background:rgba(255,212,71,.07)}
+
+/* ---------- палітра команд над редактором ---------- */
+.palette{
+  background:rgba(15,19,48,.5);border:1px solid #333c78;border-radius:12px;
+  padding:8px 12px;margin-bottom:10px;
+}
+.palette > summary{
+  cursor:pointer;list-style:none;font-family:"Fredoka";font-size:.9rem;color:#a9b4ff;
+}
+.palette > summary::-webkit-details-marker{display:none}
+.palette > summary::before{content:"▸ ";color:#7d86c0}
+.palette[open] > summary::before{content:"▾ "}
+.palette-body{margin-top:8px;display:flex;flex-direction:column;gap:7px}
+.palette-grp{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.palette-name{
+  font-family:"Fredoka";font-size:.75rem;color:#7d86c0;width:5.4em;flex:none;
+}
+button.chip-cmd{
+  font-family:"JetBrains Mono",monospace;font-size:.78rem;cursor:pointer;
+  background:#1b2250;color:#dfe4ff;border:1px solid #3a4699;border-radius:8px;
+  padding:4px 9px;transition:background .12s,transform .08s;
+}
+button.chip-cmd:hover{background:#2b3576;color:#fff}
+button.chip-cmd:active{transform:translateY(1px)}
+button.chip-cmd:focus-visible{outline:3px solid var(--beam);outline-offset:2px}
+@media (max-width:560px){
+  .palette-name{width:100%;margin-bottom:-2px}
+  button.chip-cmd{font-size:.74rem;padding:5px 8px}
+}
+
+/* ---------- голос Цербера в журналі пісочниці ---------- */
+.console .cerb{color:var(--cerb)}
+
+/* ---------- зберегти / повернути журнал зірок ---------- */
+.progress-keep{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px}
+.progress-keep .btn{display:inline-block;cursor:pointer}
+label.btn.ghost{
+  font-family:"Fredoka",sans-serif;font-size:.9rem;background:transparent;color:#dfe4ff;
+  border:1.5px solid #5b66c4;border-radius:999px;padding:7px 14px;
+}
+label.btn.ghost:hover{filter:brightness(1.1)}

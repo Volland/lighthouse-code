@@ -39,11 +39,31 @@
     applied:  b => `<div class="applied"><span class="tag">У житті</span>` +
                    `<strong>${b.title}</strong> ${b.html}` +
                    (b.id ? `<label class="did"><input type="checkbox" data-did="${esc(b.id)}"` +
-                           `${Progress.isDone(b.id) ? ' checked' : ''}> я спробував(ла)</label>` : '') +
+                           `${Progress.isDone(b.id) ? ' checked' : ''}> зроблено</label>` : '') +
                    `</div>`,
 
     secret:   b => `<div class="secret"><h3>${b.title}</h3>` +
                    `${b.p.map(p=>`<p>${p}</p>`).join('')}</div>`,
+
+    /* коротко й простими словами — якір після складного місця */
+    gist:     b => `<p class="gist"><span>Коротше кажучи</span> ${b.html}</p>`,
+
+    /* слово на полях: що воно означає насправді */
+    word:     b => `<div class="word"><b>${esc(b.term)}</b> — ${b.html}</div>`,
+
+    /* міст до справжнього Python */
+    bridge:   b => `<div class="bridge"><span class="tag">Як це звучить у великому світі</span>` +
+                   `<table><tbody>` + b.pairs.map(([a, c, note]) =>
+                     `<tr><td class="ours">${a}</td><td class="arrow">→</td>` +
+                     `<td class="theirs"><code>${esc(c)}</code></td>` +
+                     `<td class="note">${note || ''}</td></tr>`).join('') +
+                   `</tbody></table>` +
+                   (b.html ? `<p class="small">${b.html}</p>` : '') + `</div>`,
+
+    /* картка «коли не працює» */
+    debug:    b => `<div class="debugcard"><span class="tag">Коли не працює</span>` +
+                   `<ol>${b.steps.map(x=>`<li>${x}</li>`).join('')}</ol>` +
+                   (b.html ? `<p class="small">${b.html}</p>` : '') + `</div>`,
 
     cta:      b => `<div class="center" style="margin-top:26px">` +
                    `<a class="btn-link" href="${esc(b.href)}">${esc(b.text)}</a></div>`,
@@ -56,9 +76,9 @@
     sb:       b => `<div class="sb"></div>`,
 
     /* завдання: те саме, але в рамці з метою, підказками й зіркою */
-    task:     b => `<div class="task" id="${esc(b.id)}">
+    task:     b => `<div class="task${b.kind === 'fix' ? ' fix' : ''}" id="${esc(b.id)}">
         <div class="task-head">
-          <span class="task-tag">Завдання</span>
+          <span class="task-tag${b.kind === 'fix' ? ' fix' : ''}">${b.kind === 'fix' ? 'Полагодь' : 'Завдання'}</span>
           <h3>${b.title}</h3>
           <span class="star" data-star="${esc(b.id)}" title="зроблено">${Progress.isDone(b.id) ? '★' : '☆'}</span>
         </div>
@@ -116,6 +136,7 @@
           fuel:      spec.fuel,
           ticks:     spec.ticks,
           cans:      spec.cans,
+          night:     !!spec.night,
           scenarios: !!spec.scenarios,
           task:      isTask ? { id: spec.id, checks: spec.checks, trials: spec.trials } : null
         });
@@ -154,8 +175,15 @@
       `<p class="count">Зроблено <b>${done}</b> із <b>${tasks.length}</b>.</p>` +
       group('code', 'Те, що пишеться в маяк') +
       group('life', 'Те, що робиться поза екраном') +
+      `<div class="progress-keep">
+         <button type="button" class="btn ghost small" data-save-journal>↓ Зберегти журнал у файл</button>
+         <label class="btn ghost small" tabindex="0">↑ Повернути з файлу
+           <input type="file" accept="application/json,.json" data-load-journal hidden>
+         </label>
+       </div>` +
       `<p class="small">Журнал пам'ятає цей браузер. Якщо відкрити книгу на іншому
-        комп'ютері — зірки почнуться спочатку.</p>`;
+        комп'ютері — зірки почнуться спочатку. Щоб узяти їх із собою, збережи журнал
+        у файл і поверни його там.</p>`;
   }
 
   function wire(book){
@@ -164,8 +192,32 @@
       if(!cb) return;
       Progress.mark(cb.getAttribute('data-did'), cb.checked);
     });
+    document.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-save-journal]')) Progress.save();
+    });
+    document.addEventListener('change', (e)=>{
+      const inp = e.target.closest('[data-load-journal]');
+      if(!inp || !inp.files || !inp.files[0]) return;
+      Progress.load(inp.files[0], ok => { if(!ok) alert('Це не схоже на журнал маяка.'); });
+      inp.value = '';
+    });
+
+    /* перемалювати всі зірки з того, що пам'ятає журнал */
+    const syncAll = ()=>{
+      document.querySelectorAll('[data-star]').forEach(s => {
+        s.textContent = Progress.isDone(s.getAttribute('data-star')) ? '★' : '☆';
+      });
+      document.querySelectorAll('[data-did]').forEach(c => {
+        c.checked = Progress.isDone(c.getAttribute('data-did'));
+      });
+      document.querySelectorAll('.task').forEach(card => {
+        card.classList.toggle('done', Progress.isDone(card.id));
+      });
+    };
+
     document.addEventListener('lh:progress', (e)=>{
       const { id, done } = e.detail;
+      if(id === '*'){ syncAll(); renderProgress(book); return; }
       document.querySelectorAll(`[data-star="${CSS.escape(id)}"]`).forEach(s => { s.textContent = done ? '★' : '☆'; });
       document.querySelectorAll(`[data-did="${CSS.escape(id)}"]`).forEach(c => { c.checked = done; });
       const card = document.getElementById(id);

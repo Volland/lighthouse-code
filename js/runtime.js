@@ -7,7 +7,7 @@
 const PYODIDE_VER = '0.26.4';
 const PYODIDE_URL = `https://cdn.jsdelivr.net/npm/pyodide@${PYODIDE_VER}/`;
 
-const WORLD_DEFAULTS = { ticks: 6, fuel: 12, cans: 3, wind: 'тиша', guest: false };
+const WORLD_DEFAULTS = { ticks: 6, fuel: 12, cans: 3, wind: 'тиша', guest: false, night: false };
 
 let _pyodide = null, _loading = null;
 
@@ -53,10 +53,12 @@ from js import __lhPush
 
 _STEPS = 0
 _LINES = 0
-_CAP_STEPS = 400
-_CAP_LINES = 300000
+_CAP_STEPS = 120
+_CAP_LINES = 40000
 
-_ticks = int(_cfg_ticks)
+_SHOW_NIGHT = bool(_cfg_shownight)
+
+ніч = int(_cfg_ticks)
 запас = int(_cfg_fuel)
 каністри = int(_cfg_cans)
 вітер = str(_cfg_wind)
@@ -68,13 +70,15 @@ class _StopSafely(Exception):
     """Зупинка своєю рукою: не помилка дитини, а запобіжник маяка."""
 
 _JARS_MAX = 6
+_LAST_JARS = None
 
 def _jars():
     """Підглянути в банки на підвіконні й показати їх на маяку.
     Банки маяка — перші, а далі ті, що дитина завела сама (будь-яке своє число)."""
     g = globals()
     out = {}
-    for name in ("запас", "каністри"):
+    named = ("ніч", "запас", "каністри") if _SHOW_NIGHT else ("запас", "каністри")
+    for name in named:
         v = g.get(name)
         if isinstance(v, int) and not isinstance(v, bool):
             out[name] = v
@@ -83,8 +87,16 @@ def _jars():
             break
         if name.startswith("_") or name in out:
             continue
+        if name == "ніч" and not _SHOW_NIGHT:
+            continue
         if isinstance(v, int) and not isinstance(v, bool):
             out[name] = v
+    # нічого не змінилось — не смикаємо браузер марно. Саме це рятує
+    # зациклену програму від того, щоб думати хвилину замість секунди.
+    global _LAST_JARS
+    if out == _LAST_JARS:
+        return
+    _LAST_JARS = dict(out)
     __lhPush("jars", json.dumps(out))
 
 def _tick():
@@ -104,11 +116,10 @@ def обернути_промінь():     _tick(); __lhPush("rotate", None)
 def дати_воду(соняшник=None):_tick(); __lhPush("water", None)
 
 def темно():
-    global _ticks
-    if _ticks > 0:
-        _ticks -= 1
-        return True
-    return False
+    """Просто дивиться в банку «ніч» і відповідає так або ні.
+    Сама вона нічого не міняє: ніч коротшає тільки тоді,
+    коли ти сам відсипаєш із неї насінину."""
+    return globals().get("ніч", 0) > 0
 
 def гість_на_стежці():
     return _guest
@@ -117,9 +128,16 @@ def полічити(що):
     try: return len(що)
     except TypeError: return що
 
+def _словом(a):
+    """Маяк говорить українською навіть про «так» і «ні»."""
+    if a is True:  return "так"
+    if a is False: return "ні"
+    if a is None:  return "нічого"
+    return str(a)
+
 def показати(*args):
     _jars()
-    __lhPush("print", " ".join(str(a) for a in args))
+    __lhPush("print", " ".join(_словом(a) for a in args))
 
 def _guard(frame, event, arg):
     global _LINES
@@ -132,13 +150,55 @@ def _guard(frame, event, arg):
 sys.settrace(_guard)
 `;
 
+/* ---- слова, які маяк знає: для підказки «може, тут мало бути…» ---- */
+const KNOWN_WORDS = [
+  'протерти_скло', 'підрівняти_гніт', 'повернути_лінзу', 'запалити_вогонь',
+  'повне_світло', 'притлумити_гніт', 'обернути_промінь', 'дати_воду',
+  'показати', 'темно', 'гість_на_стежці', 'полічити',
+  'ніч', 'запас', 'каністри', 'вітер', 'ряд', 'range'
+];
+
+/* команди, які без дужок нічого не роблять — на них озивається Цербер */
+const COMMAND_WORDS = [
+  'протерти_скло', 'підрівняти_гніт', 'повернути_лінзу', 'запалити_вогонь',
+  'повне_світло', 'притлумити_гніт', 'обернути_промінь', 'дати_воду',
+  'показати', 'темно', 'гість_на_стежці', 'полічити'
+];
+
+/* наскільки два слова різні — скільки букв треба виправити */
+function distance(a, b){
+  a = a.toLowerCase(); b = b.toLowerCase();
+  const prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for(let i = 1; i <= a.length; i++){
+    let diag = prev[0];
+    prev[0] = i;
+    for(let j = 1; j <= b.length; j++){
+      const tmp = prev[j];
+      prev[j] = Math.min(prev[j] + 1, prev[j - 1] + 1, diag + (a[i - 1] === b[j - 1] ? 0 : 1));
+      diag = tmp;
+    }
+  }
+  return prev[b.length];
+}
+
+/* найсхожіше слово, яке маяк знає — або null, якщо нічого й близько нема */
+function closestWord(word, extra){
+  const pool = KNOWN_WORDS.concat(extra || []);
+  const limit = word.length <= 4 ? 1 : (word.length <= 8 ? 2 : 3);
+  let best = null, bestD = Infinity;
+  for(const w of pool){
+    const d = distance(word, w);
+    if(d < bestD){ bestD = d; best = w; }
+  }
+  return bestD <= limit ? best : null;
+}
+
 /* ---- переклад помилок у голос світу маяка ---- */
-function translateError(raw){
+function translateError(raw, code){
   const msg = String(raw || '');
   if(msg.includes('_StopSafely')){
-    if(msg.includes('endless-loop'))
-      return 'Цугі каже: цей цикл ніяк не спиниться. Перевір, чи має він умову, за якої зупиниться.';
-    return 'Цугі каже: маяк уже зробив дуже багато дій поспіль і трохи втомився. Можливо, цикл не має кінця?';
+    return 'Цугі каже: цей цикл крутиться й крутиться, а кінця не видно. ' +
+           'Усередині має бути щось, що потроху наближає кінець — наприклад «ніч = ніч - 1».';
   }
   const lines = msg.trim().split('\n').filter(Boolean);
   const last = lines[lines.length - 1] || '';
@@ -151,13 +211,19 @@ function translateError(raw){
     case 'SyntaxError':
       return 'Здається, десь загубився знак — можливо, дужка чи двокрапка. Придивись до рядка уважно.';
     case 'IndentationError':
-      return 'Цей рядок стоїть не на своєму місці. Пам’ятаєш: те, що всередині — зсунуте вправо на крок (відступ).';
+      return 'Цей рядок стоїть не на своєму місці. Згадай: те, що всередині — зсунуте вправо на крок (відступ).';
     case 'NameError': {
-      const nm = (detail.match(/'([^']+)'/) || [,''])[1];
-      return `Маяк не знає слова «${nm}». Може, у ньому одруку? Або ти забув спершу дати цьому ім’я?`;
+      const nm = (detail.match(/'([^']+)'/) || [, ''])[1];
+      /* імена, які дитина завела сама — їх маяк теж «знає» */
+      const mine = [...String(code || '').matchAll(/(?:^|\n)[ \t]*(?:def[ \t]+)?([^\W\d]\w*)[ \t]*[=(]/g)]
+        .map(x => x[1]).filter(w => w !== nm);
+      const near = closestWord(nm, mine);
+      return near
+        ? `Маяк не знає слова «${nm}». Може, тут мало бути «${near}»?`
+        : `Маяк не знає слова «${nm}». Пошукай у ньому одрук — або дай цьому ім’я, перш ніж кликати.`;
     }
     case 'TypeError':
-      return 'Ця команда отримала не те, чого чекала. Перевір, що саме ти поклав у дужки.';
+      return 'Ця команда отримала не те, чого чекала. Перевір, що саме стоїть у дужках.';
     case 'ZeroDivisionError':
       return 'На нуль ділити не можна — навіть маякові. Спробуй інше число.';
     case 'RecursionError':
@@ -165,6 +231,16 @@ function translateError(raw){
     default:
       return detail ? (kind ? kind + ': ' + detail : detail) : 'Щось пішло не так. Спробуй ще раз — це нормально.';
   }
+}
+
+/* ---- Цербер: помічає ім'я дії, написане без дужок ---- */
+function cerberusNote(code){
+  const re = new RegExp('(?:^|\\n)[ \\t]*(' + COMMAND_WORDS.join('|') + ')[ \\t]*(?:#[^\\n]*)?(?=\\n|$)', 'g');
+  const hit = re.exec(String(code || ''));
+  if(!hit) return null;
+  const name = hit[1];
+  return `\u{1F415} Цербер підняв голову: «Це ім’я дії — «${name}». Саме собою воно нічого не робить. ` +
+         `Хочеш, щоб воно сталося — додай дужки: ${name}().»`;
 }
 
 /* ---- запуск коду дитини ---- */
@@ -179,6 +255,7 @@ function execute(py, userCode, world){
   ns.set('_cfg_cans',      world.cans);
   ns.set('_cfg_wind',      world.wind);
   ns.set('_cfg_guest',     world.guest);
+  ns.set('_cfg_shownight', !!world.night);
 
   let error = null;
   try{
@@ -214,7 +291,10 @@ async function runCode(userCode, world, ui){
   const res = execute(py, userCode, world);
   await ui.view.play(res.acts, (t)=>ui.log(t));   // програємо навіть те, що встигло статись до помилки
 
-  if(res.error){ ui.log(translateError(res.error.message), 'err'); return res; }
+  const woof = cerberusNote(userCode);
+  if(woof) ui.log(woof, 'cerb');
+
+  if(res.error){ ui.log(translateError(res.error.message, userCode), 'err'); return res; }
   const lit = res.acts.some(a => a.type === 'ignite' || a.type === 'full');
   ui.log(lit ? '✔ Маяк світить.' : 'Готово.', 'ok');
   return res;
@@ -225,6 +305,36 @@ async function runQuiet(userCode, world){
   const py = await getPyodide();
   return execute(py, userCode, world);
 }
+
+/* ==========================================================================
+   Палітра команд — щоб восьмирічному не доводилось вибивати кожну літеру.
+   Натиснув — рядок з'явився в редакторі сам, з дужками й відступом.
+   ========================================================================== */
+const PALETTE = [
+  { grp:'дії маяка', items:[
+    { l:'протерти_скло()' },
+    { l:'підрівняти_гніт()' },
+    { l:'повернути_лінзу("північ")' },
+    { l:'запалити_вогонь()' },
+    { l:'повне_світло()' },
+    { l:'притлумити_гніт()' },
+    { l:'обернути_промінь()' },
+    { l:'дати_воду(соняшник)' },
+    { l:'показати(…)', ins:'показати("")', back:2 }
+  ]},
+  { grp:'банки', items:[
+    { l:'ніч = ніч - 1' },
+    { l:'запас = запас - 1' },
+    { l:'каністри = каністри - 1' }
+  ]},
+  { grp:'правила', items:[
+    { l:'while темно():', ins:'while темно():\n' },
+    { l:'for … in ряд:',  ins:'for соняшник in ряд:\n' },
+    { l:'if вітер == "сильний":', ins:'if вітер == "сильний":\n' },
+    { l:'else:', ins:'else:\n' },
+    { l:"def ім'я():", ins:"def ім'я():\n", back:4 }
+  ]}
+];
 
 /* ==========================================================================
    Sandbox — збирає редактор, маяк і консоль в одному блоці
@@ -245,6 +355,15 @@ class Sandbox {
       </div>
       <div class="sb-grid">
         <div>
+          <details class="palette" open>
+            <summary>Команди маяка — натисни, і рядок з'явиться сам</summary>
+            <div class="palette-body">${PALETTE.map(g =>
+              `<div class="palette-grp"><span class="palette-name">${g.grp}</span>` +
+              g.items.map((it, i) =>
+                `<button type="button" class="chip-cmd" data-grp="${PALETTE.indexOf(g)}" data-i="${i}">` +
+                `${escapeHTML(it.l)}</button>`).join('') + `</div>`).join('')}
+            </div>
+          </details>
           <div class="sb-editor"><textarea spellcheck="false" aria-label="Код для маяка"></textarea></div>
           <div class="sb-controls">
             <button class="btn run" type="button">▶ Запустити</button>
@@ -293,6 +412,13 @@ class Sandbox {
       }
     };
 
+    mount.querySelectorAll('.chip-cmd').forEach(btn => {
+      btn.addEventListener('click', ()=>{
+        const it = PALETTE[+btn.dataset.grp].items[+btn.dataset.i];
+        this.insertLine(it.ins || (it.l + '\n'), it.back || 0);
+      });
+    });
+
     this.runBtn.addEventListener('click', ()=>this.run());
     this.resetBtn.addEventListener('click', ()=>this.restore());
     this.ta.addEventListener('input', ()=>this.autoRows());
@@ -300,13 +426,75 @@ class Sandbox {
     this.resetStage();
   }
 
+  /* відступ рядка, у якому зараз курсор */
+  lineIndent(pos){
+    const v = this.ta.value;
+    const from = v.lastIndexOf('\n', pos - 1) + 1;
+    const line = v.slice(from, pos);
+    return (line.match(/^[ \t]*/) || [''])[0];
+  }
+
+  /* вставити текст у позицію курсора */
+  put(text, caretBack){
+    const v = this.ta.value, a = this.ta.selectionStart, b = this.ta.selectionEnd;
+    this.ta.value = v.slice(0, a) + text + v.slice(b);
+    const at = a + text.length - (caretBack || 0);
+    this.ta.selectionStart = this.ta.selectionEnd = at;
+    this.autoRows();
+    this.ta.focus();
+  }
+
+  /* вставити цілий рядок з кнопки: з нового рядка й з тим самим відступом */
+  insertLine(text, caretBack){
+    const v = this.ta.value;
+    let a = this.ta.selectionStart;
+    if(a === 0 && v.trim() === ''){ this.ta.selectionStart = this.ta.selectionEnd = a = 0; }
+    const from = v.lastIndexOf('\n', a - 1) + 1;
+    const before = v.slice(from, a);
+    const indent = (before.match(/^[ \t]*/) || [''])[0];
+    const head = before.trim() === '' ? '' : '\n' + indent;
+    /* рядок, що відкриває блок, сам просить наступний відступ */
+    const opensBlock = /:\s*\n$/.test(text);
+    const body = text.replace(/\n$/, opensBlock ? '\n' + indent + '    ' : '\n' + indent);
+    this.put(head + body, caretBack);
+  }
+
   onKey(e){
     if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)){ e.preventDefault(); this.run(); return; }
+
     if(e.key === 'Tab'){
       e.preventDefault();
-      const s = this.ta.selectionStart;
-      this.ta.value = this.ta.value.slice(0, s) + '    ' + this.ta.value.slice(this.ta.selectionEnd);
-      this.ta.selectionStart = this.ta.selectionEnd = s + 4;
+      this.put('    ', 0);
+      return;
+    }
+
+    /* Enter сам тримає відступ, а після двокрапки — зсуває ще на крок */
+    if(e.key === 'Enter' && !e.shiftKey){
+      const pos = this.ta.selectionStart;
+      if(pos !== this.ta.selectionEnd) return;
+      const v = this.ta.value;
+      const from = v.lastIndexOf('\n', pos - 1) + 1;
+      const line = v.slice(from, pos);
+      let indent = (line.match(/^[ \t]*/) || [''])[0];
+      if(/:\s*$/.test(line.replace(/#.*$/, ''))) indent += '    ';
+      if(!indent) return;
+      e.preventDefault();
+      this.put('\n' + indent, 0);
+      return;
+    }
+
+    /* Backspace усередині відступу знімає цілий крок, а не один пробіл */
+    if(e.key === 'Backspace' && this.ta.selectionStart === this.ta.selectionEnd){
+      const pos = this.ta.selectionStart;
+      const ind = this.lineIndent(pos);
+      const v = this.ta.value;
+      const from = v.lastIndexOf('\n', pos - 1) + 1;
+      if(pos > from && pos - from === ind.length && ind.length % 4 === 0 && ind.indexOf('\t') < 0){
+        e.preventDefault();
+        this.ta.value = v.slice(0, pos - 4) + v.slice(pos);
+        this.ta.selectionStart = this.ta.selectionEnd = pos - 4;
+        this.autoRows();
+      }
     }
   }
 
@@ -325,14 +513,18 @@ class Sandbox {
 
   resetStage(){
     const w = this.world();
-    this.view.reset({ 'запас': w.fuel, 'каністри': w.cans });
+    const jars = w.night ? { 'ніч': w.ticks } : {};
+    jars['запас'] = w.fuel;
+    jars['каністри'] = w.cans;
+    this.view.reset(jars);
   }
 
   world(){
     const w = Object.assign({}, WORLD_DEFAULTS, {
       ticks:     this.opts.ticks     ?? WORLD_DEFAULTS.ticks,
       fuel:      this.opts.fuel      ?? WORLD_DEFAULTS.fuel,
-      cans:      this.opts.cans      ?? WORLD_DEFAULTS.cans
+      cans:      this.opts.cans      ?? WORLD_DEFAULTS.cans,
+      night:     this.opts.night     ?? WORLD_DEFAULTS.night
     });
     if(this.scenarioSel){
       const v = this.scenarioSel.value;
@@ -388,8 +580,9 @@ class Sandbox {
   }
 
   showVerdict(ok, notes){
-    const praise = ['Вийшло! Маяк тебе послухався.', 'Точно так. Маяк світить, як ти сказав.',
-                    'Є! Саме цього ми й хотіли.', 'Зроблено. Цугі б схвально моргнув.'];
+    const praise = ['Вийшло! Маяк тебе послухався.', 'Точно так. Маяк світить, як йому сказано.',
+                    'Є! Саме цього ми й хотіли.', 'Зроблено. Цугі б схвально моргнув.',
+                    'Маяк зрозумів усе з першого разу. Так буває не завжди — тішся.'];
     this.verdictEl.hidden = false;
     this.verdictEl.className = 'verdict ' + (ok ? 'ok' : 'no');
     this.verdictEl.innerHTML = ok
@@ -421,6 +614,7 @@ function initSandboxes(root){
       fuel:      num('data-fuel', WORLD_DEFAULTS.fuel),
       ticks:     num('data-ticks', WORLD_DEFAULTS.ticks),
       cans:      num('data-cans', WORLD_DEFAULTS.cans),
+      night:     el.hasAttribute('data-night'),
       scenarios: el.hasAttribute('data-scenarios')
     });
   });
