@@ -251,6 +251,13 @@ zeigen("fertig")`,
      Das Buch: Beschriftungen der Bausteine
      --------------------------------------------------------------------- */
   book: {
+    /* Beschriftungen, die nur im Manuskript vorkommen (tools/manuscript.mjs) */
+    bridgeOurs: 'im Buch',
+    bridgeTheirs: 'in der großen Welt',
+    manuscript: 'Manuskript',
+    contents: 'Inhalt',
+    generatedFrom: 'Diese Datei wurde erzeugt aus',
+    editBack: 'Änderungen daran müssen zurück in den Buchtext übertragen werden.',
     sandbox: 'Sandkasten',
     maxNote: '🖊 aus Max’ Logbuch',
     taskTag: 'Aufgabe',

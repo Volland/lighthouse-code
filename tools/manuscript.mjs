@@ -34,12 +34,28 @@ function loadBook(code){
 
 let book, LB, out, OUT;
 
+/* Розмітка книги → чистий текст для людини.
+
+   Два рішення, які варто пояснити:
+   1) наголоси автора (<strong>, <em>, <code>) — це теж текст, і редактор має
+      їх бачити, тож вони стають звичайним markdown, а не зникають;
+   2) у story.<мова>.js абзац розбитий на рядки, щоб влазив у вікно редактора
+      коду. Для рукопису це шкода: редактор читає абзацами, а не рядками
+      по 90 символів. Тому переноси всередині абзацу знімаються, і лишається
+      тільки той, який автор поставив свідомо — <br>. */
+const BR = '\u0000';
+
 const text = (html) => String(html)
-  .replace(/<br\s*\/?>/gi, '\n')
+  .replace(/<br\s*\/?>/gi, BR)
+  .replace(/<\/?(?:strong|b)>/gi, '**')
+  .replace(/<\/?(?:em|i)>/gi, '*')
+  .replace(/<code>([\s\S]*?)<\/code>/gi, (_, c) => '`' + c.replace(/\s+/g, ' ').trim() + '`')
+  .replace(/<a\b[^>]*>([\s\S]*?)<\/a>/gi, '$1')
   .replace(/<[^>]+>/g, '')
   .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-  .replace(/[ \t]*\n[ \t]*/g, '\n')
+  .replace(/\s*\n\s*/g, ' ')
   .replace(/[ \t]{2,}/g, ' ')
+  .replace(/\s*\u0000\s*/g, '\n')
   .trim();
 
 const push = (s = '') => out.push(s);
@@ -67,7 +83,7 @@ function block(b, depth){
     case 'task':     push(`**${b.kind === 'fix' ? LB.fixTag : LB.taskTag}: ${text(b.title)}**`); push();
                      push(text(b.goal)); push();
                      push('```python'); push(b.code.trim()); push('```'); push();
-                     (b.hints || []).forEach((h, n) => push(`*${LB.hint} ${n+1}:* ${text(h)}`));
+                     (b.hints || []).forEach((h, n) => push(`- *${LB.hint} ${n+1}:* ${text(h)}`));
                      if(b.hints) push();
                      if(b.solution){ push(`*${LB.solution}:*`); push();
                                      push('```python'); push(b.solution.trim()); push('```'); push(); }
@@ -75,7 +91,7 @@ function block(b, depth){
     case 'gist':     push(`> **${LB.gistLabel}** ${text(b.html)}`); push(); break;
     case 'word':     push(`> **${text(b.term)}** — ${text(b.html)}`); push(); break;
     case 'bridge':   push(`**${LB.bridgeTag}**`); push();
-                     push('| | | |');
+                     push(`| ${LB.bridgeOurs} | ${LB.bridgeTheirs} | |`);
                      push('|---|---|---|');
                      b.pairs.forEach(([a, c, n]) => push(`| ${text(a)} | \`${text(c)}\` | ${text(n || '')} |`));
                      push();
@@ -103,7 +119,22 @@ for(const code of todo){
   LB   = Object.assign({ sandbox: 'sandbox' }, langPack(code).book);
   OUT  = resolve(ROOT, (todo.length === 1 && OUT_ARG) || `content/story.${code}.md`);
 
-  out = [`# ${book.title}`, ''];
+  const today = new Date().toISOString().slice(0, 10).split('-').reverse().join('.');
+
+  out = [];
+  push(`# ${book.title}`);
+  push();
+  push(`*${LB.manuscript} · ${langPack(code).name} · ${today}*`);
+  push();
+  push(`*${LB.generatedFrom} \`content/story.${code}.js\`. ${LB.editBack}*`);
+  push();
+  push(`## ${LB.contents}`);
+  push();
+  book.chapters.forEach(ch => push(`- ${ch.num}. ${text(ch.title)}`));
+  push();
+  push('---');
+  push();
+
   book.chapters.forEach(ch => {
     push(`## ${ch.num}. ${text(ch.title)}`);
     push();
@@ -113,7 +144,18 @@ for(const code of todo){
   });
 
   const md = out.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
-  writeFileSync(OUT, md, 'utf8');
   const words = md.split(/\s+/).filter(Boolean).length;
+
+  /* Рукопис лежить у гіті, щоб редактор правив його в PR. Дата в шапці
+     міняється щодня — і без цієї перевірки кожен перезапуск давав би «зміну»
+     там, де в тексті не змінилось жодного слова. Порівнюємо без дати. */
+  const undated = (x) => x.replace(/^(\*.* · )\d{2}\.\d{2}\.\d{4}\*$/m, '$1*');
+  const had = existsSync(OUT) ? readFileSync(OUT, 'utf8') : null;
+  if(had && undated(had) === undated(md)){
+    console.log(`${OUT}\nбез змін (розділів: ${book.chapters.length}, слів: ${words})`);
+    continue;
+  }
+
+  writeFileSync(OUT, md, 'utf8');
   console.log(`${OUT}\nрозділів: ${book.chapters.length}, слів: ${words}`);
 }
